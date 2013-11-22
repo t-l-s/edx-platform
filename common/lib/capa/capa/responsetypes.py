@@ -154,6 +154,8 @@ class LoncapaResponse(object):
         # to the user about the authored order. So if the author likes to always
         # put the right answer first and then the others, they can just do that.
         self.shuffle_tree(self.xml)
+        #import ipdb
+        #ipdb.set_trace()
 
         self.id = xml.get('id')
 
@@ -205,6 +207,7 @@ class LoncapaResponse(object):
 
         if hasattr(self, 'setup_response'):
             self.setup_response()
+        #ipdb.set_trace()
 
     def get_max_score(self):
         """
@@ -227,7 +230,10 @@ class LoncapaResponse(object):
         middle = []  # only this one gets shuffled
         tail = []
         at_head = True
+        index = 0
         for choice in choices:
+            choice.set('index', str(index))  # for future de-shuffle
+            index += 1
             if at_head and choice.get('fixed') == 'true':
                 head.append(choice)
                 continue
@@ -252,6 +258,9 @@ class LoncapaResponse(object):
             ordering = self.shuffle_choices(ordering)
             for choice in ordering:
                 choicegroup.append(choice)
+
+    def translate_shuffle(self):
+      return None
 
     def render_html(self, renderer, response_msg=''):
         """
