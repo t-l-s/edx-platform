@@ -458,6 +458,7 @@ class CapaModule(CapaMixin, XModule):
         self.log_shuffle(event_info)
         #import ipdb
         #ipdb.set_trace()
+        # Hey Jenkins, let's try that again!
         self.system.track_function('problem_check', event_info)
 
         if hasattr(self.system, 'psychometrics_handler'):  # update PsychometricsData using callback

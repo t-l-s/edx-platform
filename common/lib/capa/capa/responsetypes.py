@@ -154,8 +154,8 @@ class LoncapaResponse(object):
         # to the user about the authored order. So if the author likes to always
         # put the right answer first and then the others, they can just do that.
         self.shuffle_tree(self.xml)
-        ##import ipdb
-        ##ipdb.set_trace()
+        #import ipdb
+        #ipdb.set_trace()
 
         self.id = xml.get('id')
 
@@ -249,26 +249,27 @@ class LoncapaResponse(object):
 
     def shuffle_tree(self, tree):
         """
-        Shuffles the choices in-place in the given tree, setting
-        .is_shuffled to True.
-        There must be at most one shuffled choicegroup and it must contain
+        If the tree contains shuffling, shuffles the choices in-place in the given tree
+        and sets self.is_shuffled to True. Otherwise does nothing.
+        For shuffling there must be at most one shuffled choicegroup and it must contain
         only choice elements.
         """
         choicegroups = tree.xpath('//choicegroup[@shuffle="true"]')
-        if len(choicegroups) > 1:
-            raise LoncapaProblemError('We support at most one shuffled choicegroup')
-        choicegroup = choicegroups[0]
-        self.is_shuffled = True  # if present, we have shuffling
-        # Move elements from tree to list for shuffling, then put them back.
-        ordering = list(choicegroup.getchildren())
-        for choice in ordering:
-            # Assert that we only have choice tags in here (maybe this is true anyway?)
-            if choice.tag != 'choice':
-                raise LoncapaProblemError('For shuffling, choicegroup may only contain choice elements')
-            choicegroup.remove(choice)
-        ordering = self.shuffle_choices(ordering)
-        for choice in ordering:
-            choicegroup.append(choice)
+        if choicegroups:
+            if len(choicegroups) > 1:
+                raise LoncapaProblemError('We support at most one shuffled choicegroup')
+            choicegroup = choicegroups[0]
+            self.is_shuffled = True  # if present, we have shuffling
+            # Move elements from tree to list for shuffling, then put them back.
+            ordering = list(choicegroup.getchildren())
+            for choice in ordering:
+                # Assert that we only have choice tags in here (maybe this is true anyway?)
+                if choice.tag != 'choice':
+                    raise LoncapaProblemError('For shuffling, choicegroup may only contain choice elements')
+                choicegroup.remove(choice)
+            ordering = self.shuffle_choices(ordering)
+            for choice in ordering:
+                choicegroup.append(choice)
 
     def preshuffle_name(self, name):
         """
