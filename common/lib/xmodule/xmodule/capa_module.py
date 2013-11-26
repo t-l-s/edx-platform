@@ -455,7 +455,10 @@ class CapaModule(CapaMixin, XModule):
         event_info['correct_map'] = correct_map.get_dict()
         event_info['success'] = success
         event_info['attempts'] = self.attempts
-        # ipdb hack line temp
+        # The logged data uses the native, non-shuffled names of answer choices.
+        self.translate_to_native(event_info['answers'])
+        #import ipdb
+        #ipdb.set_trace()
         self.system.track_function('problem_check', event_info)
 
         if hasattr(self.system, 'psychometrics_handler'):  # update PsychometricsData using callback
@@ -468,6 +471,22 @@ class CapaModule(CapaMixin, XModule):
                 'contents': html,
                 }
 
+    def translate_to_native(self, answers):
+        """
+        Translate the given answers so names like choice_0 reflect the
+        "native" (not-shuffled) name of each choice.
+        This only does anything for shuffled multiple choice responses.
+        """
+        # answers is like: {u'i4x-Stanford-CS99-problem-dada976e76f34c24bc8415039dee1300_2_1': u'choice_1'}
+        # self.lcp.responders is like {<Element multiplechoiceresponse at 0x109ba6b40>: <capa.responsetypes.MultipleChoiceResponse object at 0x109bb8bd0>}
+        # value of above has answer_id which matches the key in answers
+        for response in self.lcp.responders.values():
+            if hasattr(response, 'is_shuffled') and response.answer_id in answers:
+                name = answers[response.answer_id]
+                answers[response.answer_id] = response.native_name(name)
+    
+    
+    
     def rescore_problem(self):
         """
         Checks whether the existing answers to a problem are correct.

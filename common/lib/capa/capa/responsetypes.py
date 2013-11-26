@@ -154,8 +154,8 @@ class LoncapaResponse(object):
         # to the user about the authored order. So if the author likes to always
         # put the right answer first and then the others, they can just do that.
         self.shuffle_tree(self.xml)
-        #import ipdb
-        #ipdb.set_trace()
+        ##import ipdb
+        ##ipdb.set_trace()
 
         self.id = xml.get('id')
 
@@ -251,6 +251,7 @@ class LoncapaResponse(object):
         Shuffles the options in-place in the given tree.
         """
         for choicegroup in tree.xpath('//choicegroup[@shuffle="true"]'):
+            self.is_shuffled = True  # if present, we have shuffling
             # Move elements from tree to list for shuffling, then put them back.
             ordering = list(choicegroup.getchildren())
             for choice in ordering:
@@ -259,8 +260,24 @@ class LoncapaResponse(object):
             for choice in ordering:
                 choicegroup.append(choice)
 
-    def translate_shuffle(self):
-      return None
+    def native_name(self, name):
+        """
+        Given a choice name like choice_0 from a choicegroup, return the
+        "native" non-shuffled name of that choice.
+        """
+        choicegroups = self.xml.xpath('//choicegroup[@shuffle="true"]')
+        if choicegroups:
+            # TODO: just using the first choicegroup .. can you have multiple?
+            choices = [choice for choice in choicegroups[0].getchildren() if choice.tag == 'choice']
+            for choice in choices:
+                if choice.get("name") == name:
+                    index = choice.get("index")
+                    result = choices[int(index)].get("name")
+                    #import ipdb
+                    #ipdb.set_trace()
+                    return result
+        raise LoncapaProblemError("Trying to translate name without match .. should not happen")
+
 
     def render_html(self, renderer, response_msg=''):
         """
