@@ -217,7 +217,8 @@ class LoncapaResponse(object):
 
     def shuffle_choices(self, choices):
         """
-        Returns a list of choice nodes with the shuffling done.
+        Returns a list of choice nodes with the shuffling done
+        and with index=N tags added to mark the original order.
         Uses the context seed for the randomness of the shuffle.
         Choices with 'fixed'='true' are held back from the shuffle.
         """
@@ -248,36 +249,57 @@ class LoncapaResponse(object):
 
     def shuffle_tree(self, tree):
         """
-        Shuffles the options in-place in the given tree.
+        Shuffles the choices in-place in the given tree, setting
+        .is_shuffled to True.
+        There must be at most one shuffled choicegroup and it must contain
+        only choice elements.
         """
-        for choicegroup in tree.xpath('//choicegroup[@shuffle="true"]'):
-            self.is_shuffled = True  # if present, we have shuffling
-            # Move elements from tree to list for shuffling, then put them back.
-            ordering = list(choicegroup.getchildren())
-            for choice in ordering:
-                choicegroup.remove(choice)
-            ordering = self.shuffle_choices(ordering)
-            for choice in ordering:
-                choicegroup.append(choice)
+        choicegroups = tree.xpath('//choicegroup[@shuffle="true"]')
+        if len(choicegroups) > 1:
+            raise LoncapaProblemError('We support at most one shuffled choicegroup')
+        choicegroup = choicegroups[0]
+        self.is_shuffled = True  # if present, we have shuffling
+        # Move elements from tree to list for shuffling, then put them back.
+        ordering = list(choicegroup.getchildren())
+        for choice in ordering:
+            # Assert that we only have choice tags in here (maybe this is true anyway?)
+            if choice.tag != 'choice':
+                raise LoncapaProblemError('For shuffling, choicegroup may only contain choice elements')
+            choicegroup.remove(choice)
+        ordering = self.shuffle_choices(ordering)
+        for choice in ordering:
+            choicegroup.append(choice)
 
-    def native_name(self, name):
+    def preshuffle_name(self, name):
         """
-        Given a choice name like choice_0 from a choicegroup, return the
-        "native" non-shuffled name of that choice.
+        Given a choice name like choice_0, returns the
+        original, pre-shuffle name of that choice.
+        Raises an error if the name is not known.
         """
         choicegroups = self.xml.xpath('//choicegroup[@shuffle="true"]')
-        if choicegroups:
-            # TODO: just using the first choicegroup .. can you have multiple?
-            choices = [choice for choice in choicegroups[0].getchildren() if choice.tag == 'choice']
-            for choice in choices:
-                if choice.get("name") == name:
-                    index = choice.get("index")
-                    result = choices[int(index)].get("name")
-                    #import ipdb
-                    #ipdb.set_trace()
-                    return result
-        raise LoncapaProblemError("Trying to translate name without match .. should not happen")
+        choices = list(choicegroups[0].getchildren())
+        for choice in choices:
+            if choice.get('name') == name:
+                index = choice.get('index')
+                result = choices[int(index)].get('name')
+                return result
+        raise LoncapaProblemError('preshuffle_name without match - should not happen')
 
+    def preshuffle_names(self):
+        """
+        Returns a list of the names of the choices as displayed (shuffled),
+        but using the pre-shuffle names.
+        Returns None if there is no shuffling.
+        """
+        if not hasattr(self, 'is_shuffled'):
+            return None
+        choicegroups = self.xml.xpath('//choicegroup[@shuffle="true"]')
+        choices = list(choicegroups[0].getchildren())
+        result = []
+        for choice in choices:
+            index = int(choice.get("index"))
+            result.append(choices[index].get("name"))
+        return result
 
     def render_html(self, renderer, response_msg=''):
         """
