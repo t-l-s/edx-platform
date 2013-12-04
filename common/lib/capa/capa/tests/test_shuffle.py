@@ -33,7 +33,41 @@ class CapaShuffleTest(unittest.TestCase):
         # shuffling 4 things with seed of 0 yields: B A C D
         the_html = problem.get_html()
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'Banana'.*'Apple'.*'Chocolate'.*'Donut'.*\].*</div>")
+        
+        # Check that the response can translate back to the "preshuffle" names
+        response = problem.responders.values()[0];
+        self.assertTrue(hasattr(response, 'is_shuffled'))
+        self.assertEqual(response.preshuffle_names(), ['choice_1', 'choice_0', 'choice_2', 'choice_3'])
+        self.assertEqual(response.preshuffle_name('choice_0'), 'choice_1')
+        self.assertEqual(response.preshuffle_name('choice_1'), 'choice_0')
 
+    def test_shuffle_custom_names(self):
+        xml_str = textwrap.dedent("""
+            <problem>
+            <multiplechoiceresponse>
+              <choicegroup type="MultipleChoice" shuffle="true">
+                <choice correct="false" name="a">Apple</choice>
+                <choice correct="false">Banana</choice>
+                <choice correct="false">Chocolate</choice>
+                <choice correct ="true">Donut</choice>
+              </choicegroup>
+            </multiplechoiceresponse>
+            </problem>
+        """)
+        problem = new_loncapa_problem(xml_str, seed=0)
+        # B A C D
+        # Check that the response can translate back to the "preshuffle" names
+        response = problem.responders.values()[0];
+        import ipdb
+        ipdb.set_trace()
+        response.preshuffle_names()
+        self.assertTrue(hasattr(response, 'is_shuffled'))
+        self.assertEqual(response.preshuffle_names(), ['choice_0', 'choice_a', 'choice_1', 'choice_2'])
+        # Tricky: when we shuffle the choices around, the names are not shuffled.
+        # Here we translate back to the sensible, preshuffled names
+        #self.assertEqual(response.preshuffle_name('choice_a'), 'choice_b')
+        #self.assertEqual(response.preshuffle_name('choice_b'), 'choice_a')
+        
     def test_shuffle_different_seed(self):
         xml_str = textwrap.dedent("""
             <problem>
@@ -64,6 +98,11 @@ class CapaShuffleTest(unittest.TestCase):
         problem = new_loncapa_problem(xml_str, seed=0)
         the_html = problem.get_html()
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'Apple'.*\].*</div>")
+        
+        response = problem.responders.values()[0];
+        self.assertTrue(hasattr(response, 'is_shuffled'))
+        self.assertEqual(response.preshuffle_names(), ['choice_0'])
+        self.assertEqual(response.preshuffle_name('choice_0'), 'choice_0')
 
     def test_shuffle_6_choices(self):
         xml_str = textwrap.dedent("""
@@ -103,6 +142,9 @@ class CapaShuffleTest(unittest.TestCase):
         the_html = problem.get_html()
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'Apple'.*'Banana'.*'Chocolate'.*'Donut'.*\].*</div>")
 
+        response = problem.responders.values()[0];
+        self.assertFalse(hasattr(response, 'is_shuffled'))
+
     def test_shuffle_fixed_head_end(self):
         xml_str = textwrap.dedent("""
             <problem>
@@ -122,6 +164,12 @@ class CapaShuffleTest(unittest.TestCase):
         the_html = problem.get_html()
         # Alpha Beta held back from shuffle (head end)
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'Alpha'.*'Beta'.*'B'.*'A'.*'C'.*'D'.*\].*</div>")
+
+        response = problem.responders.values()[0];
+        self.assertTrue(hasattr(response, 'is_shuffled'))
+        self.assertEqual(response.preshuffle_names(), ['choice_0', 'choice_1', 'choice_3', 'choice_2', 'choice_4', 'choice_5'])
+        self.assertEqual(response.preshuffle_name('choice_0'), 'choice_0')
+        self.assertEqual(response.preshuffle_name('choice_2'), 'choice_3')
 
     def test_shuffle_fixed_tail_end(self):
         xml_str = textwrap.dedent("""
