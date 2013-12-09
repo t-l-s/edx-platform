@@ -455,10 +455,12 @@ class CapaModule(CapaMixin, XModule):
         event_info['correct_map'] = correct_map.get_dict()
         event_info['success'] = success
         event_info['attempts'] = self.attempts
-        self.log_shuffle(event_info)
+        # njp
+        print "eek before", event_info
+        self.unmask_log(event_info)
+        print "eek after", event_info
         #import ipdb
         #ipdb.set_trace()
-        # Hey Jenkins, let's try that again!
         self.system.track_function('problem_check', event_info)
 
         if hasattr(self.system, 'psychometrics_handler'):  # update PsychometricsData using callback
@@ -471,22 +473,22 @@ class CapaModule(CapaMixin, XModule):
                 'contents': html,
                 }
 
-    def log_shuffle(self, event_info):
+    def unmask_log(self, event_info):
         """
-        Fix the logging event_info to account for shuffling.
-        This only does anything for shuffled multiple choice responses, otherwise a NOP.
+        Fix the logging event_info to account for masking.
+        This only changes names for responses that are masked, otherwise a NOP.
         """
         answers = event_info['answers']
         # answers is like: {u'i4x-Stanford-CS99-problem-dada976e76f34c24bc8415039dee1300_2_1': u'choice_1'}
         # self.lcp.responders is like: {<Element multiplechoiceresponse at 0x109ba6b40>: <capa.responsetypes.MultipleChoiceResponse object at 0x109bb8bd0>}
         # Each response values has an answer_id which matches the key in answers.
         for response in self.lcp.responders.values():
-            if hasattr(response, 'is_shuffled') and response.answer_id in answers:
-                # 1. Change the answer to use the preshuffled choice_0 naming
-                name = answers[response.answer_id]
-                answers[response.answer_id] = response.preshuffle_name(name)
+            if hasattr(response, 'is_masked') and response.answer_id in answers:
+                # 1. Change the answer to use the regular choice_0 naming
+                answers[response.answer_id] = response.unmask_name(answers[response.answer_id])
+                print "eek", name, unmasked
                 # 2. Record the shuffled ordering
-                event_info['shuffle_order'] = {response.answer_id: response.preshuffle_names()}
+                event_info['display_order'] = {response.answer_id: response.unmask_order()}
         #import ipdb
         #ipdb.set_trace()
 

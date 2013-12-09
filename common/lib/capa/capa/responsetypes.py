@@ -148,15 +148,6 @@ class LoncapaResponse(object):
         self.context = context
         self.capa_system = system
 
-        # Shuffle the order of the choices.
-        # Note that by shuffling before other processing, the choice_0 choice_1 ...
-        # numbering uses the post-shuffled ordering, so we do not leak any info
-        # to the user about the authored order. So if the author likes to always
-        # put the right answer first and then the others, they can just do that.
-        self.shuffle_tree(self.xml)
-        #import ipdb
-        #ipdb.set_trace()
-
         self.id = xml.get('id')
 
         # The LoncapaProblemError messages here do not need to be translated as they are
@@ -207,7 +198,8 @@ class LoncapaResponse(object):
 
         if hasattr(self, 'setup_response'):
             self.setup_response()
-        #ipdb.set_trace()
+
+        self.shuffle_tree(self.xml)
 
     def get_max_score(self):
         """
@@ -215,10 +207,43 @@ class LoncapaResponse(object):
         """
         return sum(self.maxpoints.values())
 
+    # Masking and Shuffling:
+    # "Masking" is a feature where the regular names of multiplechoice choices
+    # choice_0 choice_1 ... are not used. Instead we use random masked names
+    # choice_22 choice_20 ... so that a view-source of the names reveals nothing about
+    # the original order. The masked names are the names used throughout the code.
+    # We "unmask" the names, back to choice_0 style, only for the logs so they correspond
+    # to how the problems look to the author.
+    # The masked names use 2 digits as an informal reminder to anyone debugging that the
+    # masked names are different from the regular names.
+    #
+    # "Shuffling" is a feature that randomly shuffled the presentation order of the
+    # choices, so for example an instructor can always write the correct choice
+    # first, and know that it will shuffled around before the student's sees anything.
+    # When shuffling is enabled, so is masking.
+
+    def shuffle_tree(self, tree):
+        """
+        For a choicegroup with shuffle="true", shuffles the choices in-place in the given tree
+        based on the seed, and sets self.is_shuffled to True. Otherwise does nothing.
+        """
+        choicegroups = tree.xpath('//choicegroup[@shuffle="true"]')
+        if choicegroups:
+            if len(choicegroups) > 1:
+                raise LoncapaProblemError('We support at most one shuffled choicegroup')
+            choicegroup = choicegroups[0]
+            self.is_shuffled = True
+            # Move elements from tree to list for shuffling, then put them back.
+            ordering = list(choicegroup.getchildren())
+            for choice in ordering:
+                choicegroup.remove(choice)
+            ordering = self.shuffle_choices(ordering)
+            for choice in ordering:
+                choicegroup.append(choice)
+
     def shuffle_choices(self, choices):
         """
-        Returns a list of choice nodes with the shuffling done
-        and with index=N tags added to mark the original order.
+        Returns a list of choice nodes with the shuffling done.
         Uses the context seed for the randomness of the shuffle.
         Choices with 'fixed'='true' are held back from the shuffle.
         """
@@ -233,10 +258,6 @@ class LoncapaResponse(object):
         at_head = True
         index = 0
         for choice in choices:
-            choice.set('index', str(index))  # for future de-shuffle
-            index += 1
-            if (choice.get('name')):
-                choice.set('custom_name', '1')
             if at_head and choice.get('fixed') == 'true':
                 head.append(choice)
                 continue
@@ -249,66 +270,23 @@ class LoncapaResponse(object):
         rng.shuffle(middle)
         return head + middle + tail
 
-    def shuffle_tree(self, tree):
+    def unmask_name(self, name):
         """
-        If the tree contains shuffling, shuffles the choices in-place in the given tree
-        and sets self.is_shuffled to True. Otherwise does nothing.
-        For shuffling there must be at most one shuffled choicegroup and it must contain
-        only choice elements.
+        Given a masked name, e.g. choice_23, returns the regular name, e.g. choice_0.
+        Fails loudly if called for a response that is not masking.
         """
-        choicegroups = tree.xpath('//choicegroup[@shuffle="true"]')
-        if choicegroups:
-            if len(choicegroups) > 1:
-                raise LoncapaProblemError('We support at most one shuffled choicegroup')
-            choicegroup = choicegroups[0]
-            self.is_shuffled = True  # if present, we have shuffling
-            # Move elements from tree to list for shuffling, then put them back.
-            ordering = list(choicegroup.getchildren())
-            for choice in ordering:
-                # Assert that we only have choice tags in here (maybe this is true anyway?)
-                if choice.tag != 'choice':
-                    raise LoncapaProblemError('For shuffling, choicegroup may only contain choice elements')
-                choicegroup.remove(choice)
-            ordering = self.shuffle_choices(ordering)
-            for choice in ordering:
-                choicegroup.append(choice)
+        # We could check that masking is enabled, but I figure it's better to
+        # fail loudly so the upper layers are alerted to mis-use.
+        return self.mask_dict[name]
 
-    def preshuffle_name(self, name):
+    def unmask_order(self):
         """
-        Given a choice name like choice_0, returns the
-        original, pre-shuffle name of that choice.
-        Raises an error if the name is not known.
+        Returns a list of the choice names in the order displayed to the user,
+        using the regular (non-masked) names.
+        Fails loudly if called on a response that is not masking.
         """
-        choicegroups = self.xml.xpath('//choicegroup[@shuffle="true"]')
-        choices = list(choicegroups[0].getchildren())
-        for choice in choices:
-            if choice.get('name') == name:
-                if (hasattr(choice, 'custom_name')):
-                    return name
-                else:
-                    index = choice.get('index')
-                    return choices[int(index)].get('name')
-                return result
-        raise LoncapaProblemError('preshuffle_name without match - should not happen')
-
-    def preshuffle_names(self):
-        """
-        Returns a list of the names of the choices as displayed (shuffled),
-        but using the pre-shuffle names.
-        Returns None if there is no shuffling.
-        """
-        if not hasattr(self, 'is_shuffled'):
-            return None
-        choicegroups = self.xml.xpath('//choicegroup[@shuffle="true"]')
-        choices = list(choicegroups[0].getchildren())
-        result = []
-        for choice in choices:
-            if (hasattr(choice, 'custom_name')):
-                result.append(choice.get('name'))
-            else:
-                index = choice.get('index')
-                result.append(choices[int(index)].get('name'))
-        return result
+        choicegroups = self.xml.xpath('//choicegroup')
+        return [self.unmask_name(choice.get("name")) for choice in choicegroups[0].getchildren()]
 
     def render_html(self, renderer, response_msg=''):
         """
@@ -847,19 +825,38 @@ class MultipleChoiceResponse(LoncapaResponse):
     def mc_setup_response(self):
         """
         Initialize name attributes in <choice> stanzas in the <choicegroup> in this response.
+        Masks the choice names if applicable.
         """
         i = 0
         for response in self.xml.xpath("choicegroup"):
+            # Masking - detect if masking is appropriate.
+            # TODO: masking enabled by shuffle and answer-pool, could have 'inhibit' option for debugging
+            if response.get("shuffle") == "true":
+                self.is_masked = True
+                self.mask_dict = {}
+                rng = random.Random(self.context['seed'])
+                # e.g. mask_ids = [3, 1, 0, 2]
+                mask_ids = range(len(response))
+                rng.shuffle(mask_ids)
             rtype = response.get('type')
             if rtype not in ["MultipleChoice"]:
                 # force choicegroup to be MultipleChoice if not valid
                 response.set("type", "MultipleChoice")
             for choice in list(response):
-                if choice.get("name") is None:
-                    choice.set("name", "choice_" + str(i))
-                    i += 1
+                # The regular, non-masked name:
+                if choice.get("name") is not None:
+                    name = "choice_" + choice.get("name")
                 else:
-                    choice.set("name", "choice_" + choice.get("name"))
+                    name = "choice_" + str(i)
+                    i += 1
+                # If using the masked name, choice_21, save the regular name
+                # to support unmasking later (for the logs).
+                if hasattr(self, "is_masked"):
+                    mask_name = "choice_" + str(mask_ids.pop() + 20)
+                    self.mask_dict[mask_name] = name
+                    choice.set("name", mask_name)
+                else:
+                    choice.set("name", name)
 
     def get_score(self, student_answers):
         """
