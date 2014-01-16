@@ -125,7 +125,7 @@ class TestLocationMapper(unittest.TestCase):
         )
         test_problem_locn = Location('i4x', org, course, 'problem', 'abc123')
         # only one course matches
-        self.translate_n_check(test_problem_locn, old_style_course_id, new_style_package_id, 'problem2', 'published')
+
         # look for w/ only the Location (works b/c there's only one possible course match). Will force
         # cache as default translation for this problemid
         self.translate_n_check(test_problem_locn, None, new_style_package_id, 'problem2', 'published')
