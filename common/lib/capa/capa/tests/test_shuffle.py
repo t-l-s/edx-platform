@@ -6,7 +6,7 @@ import textwrap
 import mock
 
 from .response_xml_factory import StringResponseXMLFactory, CustomResponseXMLFactory
-from . import test_system, new_loncapa_problem
+from . import test_capa_system, new_loncapa_problem
 
 
 class CapaShuffleTest(unittest.TestCase):
@@ -14,7 +14,7 @@ class CapaShuffleTest(unittest.TestCase):
 
     def setUp(self):
         super(CapaShuffleTest, self).setUp()
-        self.system = test_system()
+        self.system = test_capa_system()
 
     def test_shuffle_4_choices(self):
         xml_str = textwrap.dedent("""
