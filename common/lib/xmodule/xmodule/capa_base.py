@@ -962,6 +962,7 @@ class CapaMixin(CapaFields):
         event_info['correct_map'] = correct_map.get_dict()
         event_info['success'] = success
         event_info['attempts'] = self.attempts
+        self.unmask_log(event_info)
         self.runtime.track_function('problem_check', event_info)
 
         if hasattr(self.runtime, 'psychometrics_handler'):  # update PsychometricsData using callback
@@ -971,6 +972,25 @@ class CapaMixin(CapaFields):
         html = self.get_problem_html(encapsulate=False)
 
         return {'success': success, 'contents': html}
+
+    def unmask_log(self, event_info):
+        """
+        Fix the logging event_info to account for masking.
+        This only changes names for responses that are masked, otherwise a NOP.
+        """
+        answers = event_info['answers']
+        # answers is like: {u'i4x-Stanford-CS99-problem-dada976e76f34c24bc8415039dee1300_2_1': u'choice_1'}
+        # self.lcp.responders is like: {<Element multiplechoiceresponse at 0x109ba6b40>: <capa.responsetypes.MultipleChoiceResponse object at 0x109bb8bd0>}
+        # Each response values has an answer_id which matches the key in answers.
+        for response in self.lcp.responders.values():
+            if hasattr(response, 'is_masked') and response.answer_id in answers:
+                # 1. Change the answer to use the regular choice_0 naming
+                answers[response.answer_id] = response.unmask_name(answers[response.answer_id])
+                ##print "eek", name, unmasked
+                # 2. Record the shuffled ordering
+                event_info['display_order'] = {response.answer_id: response.unmask_order()}
+        #import ipdb
+        #ipdb.set_trace()
 
     def pretty_print_seconds(self, num_seconds):
         """
