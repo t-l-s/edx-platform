@@ -94,7 +94,7 @@ class CapaShuffleTest(unittest.TestCase):
         response = problem.responders.values()[0]
         self.assertTrue(hasattr(response, 'is_shuffled'))
         self.assertEqual(response.unmask_order(), ['choice_0'])
-        self.assertEqual(response.unmask_name('choice_20'), 'choice_0')
+        self.assertEqual(response.unmask_name('mask_0'), 'choice_0')
 
     def test_shuffle_6_choices(self):
         xml_str = textwrap.dedent("""

@@ -179,8 +179,9 @@ class LoncapaProblem(object):
         # dictionary of InputType objects associated with this problem
         #   input_id string -> InputType object
         self.inputs = {}
-
         self.extracted_tree = self._extract_html(self.tree)
+
+
 
     def do_reset(self):
         """
@@ -609,8 +610,8 @@ button because no solution will show up if you were to click the "Show Answer" b
         """
         Main method called externally to get the HTML to be rendered for this capa Problem.
         """
-        self.do_answer_pool(self.tree)
         self.do_targeted_feedback(self.tree)
+        self.do_answer_pool(self.tree)
         html = contextualize_text(etree.tostring(self._extract_html(self.tree)), self.context)
 
         return html

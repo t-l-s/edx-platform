@@ -975,7 +975,8 @@ class CapaMixin(CapaFields):
 
     def unmask_log(self, event_info):
         """
-        Fix the logging event_info to account for masking.
+        Translate the logging event_info to account for masking
+        and record the display_order.
         This only changes names for responses that are masked, otherwise a NOP.
         """
         answers = event_info['answers']
@@ -984,13 +985,13 @@ class CapaMixin(CapaFields):
         # Each response values has an answer_id which matches the key in answers.
         for response in self.lcp.responders.values():
             if hasattr(response, 'is_masked') and response.answer_id in answers:
+                self.lcp.do_answer_pool(self.lcp.tree)  # so display_order can be computed
+                print 'event_info before:', event_info
                 # 1. Change the answer to use the regular choice_0 naming
                 answers[response.answer_id] = response.unmask_name(answers[response.answer_id])
-                ##print "eek", name, unmasked
                 # 2. Record the shuffled ordering
                 event_info['display_order'] = {response.answer_id: response.unmask_order()}
-        #import ipdb
-        #ipdb.set_trace()
+                print 'event_info after:', event_info
 
     def pretty_print_seconds(self, num_seconds):
         """

@@ -56,8 +56,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
 
         """)
 
-        problem = new_loncapa_problem(xml_str)
-        problem.seed = 723
+        problem = new_loncapa_problem(xml_str, seed=723)
         the_html = problem.get_html()
         # [('choice_3', u'wrong-3'), ('choice_5', u'correct-2'), ('choice_1', u'wrong-2'), ('choice_4', u'wrong-4')]
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'wrong-3'.*'correct-2'.*'wrong-2'.*'wrong-4'.*\].*</div>")
@@ -103,8 +102,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
 
         """)
 
-        problem = new_loncapa_problem(xml_str)
-        problem.seed = 9
+        problem = new_loncapa_problem(xml_str, seed=9)
         the_html = problem.get_html()
         # [('choice_0', u'wrong-1'), ('choice_4', u'wrong-4'), ('choice_3', u'wrong-3'), ('choice_2', u'correct-1')]
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'wrong-1'.*'wrong-4'.*'wrong-3'.*'correct-1'.*\].*</div>")
@@ -231,8 +229,8 @@ class CapaAnswerPoolTest(unittest.TestCase):
 
         """)
 
-        problem = new_loncapa_problem(xml_str)
         with self.assertRaises(LoncapaProblemError):
+            problem = new_loncapa_problem(xml_str)
             the_html = problem.get_html()
 
     def test_answer_pool_5_choices_1_multiplechoiceresponse_seed1(self):
@@ -272,8 +270,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
 
         """)
 
-        problem = new_loncapa_problem(xml_str)
-        problem.seed = 723
+        problem = new_loncapa_problem(xml_str, seed=723)
         the_html = problem.get_html()
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'correct-2'.*'wrong-1'.*'wrong-2'.*.*'wrong-3'.*'wrong-4'.*\].*</div>")
         self.assertRegexpMatches(the_html, r"<div>\{.*'1_solution_2'.*\}</div>")
@@ -344,8 +341,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
 
         """)
 
-        problem = new_loncapa_problem(xml_str)
-        problem.seed = 723
+        problem = new_loncapa_problem(xml_str, seed=723)
         the_html = problem.get_html()
 
         str1 = r"<div>.*\[.*'wrong-3'.*'correct-2'.*'wrong-2'.*'wrong-4'.*\].*</div>"
@@ -429,8 +425,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
 
         """)
 
-        problem = new_loncapa_problem(xml_str)
-        problem.seed = 9
+        problem = new_loncapa_problem(xml_str, seed=9)
         the_html = problem.get_html()
 
         str1 = r"<div>.*\[.*'wrong-4'.*'wrong-3'.*'correct-1'.*\].*</div>"
@@ -504,8 +499,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
 
         """)
 
-        problem = new_loncapa_problem(xml_str)
-        problem.seed = 723
+        problem = new_loncapa_problem(xml_str, seed=723)
         the_html = problem.get_html()
 
         str1 = r"<div>.*\[.*'wrong-1'.*'wrong-2'.*'correct-1'.*'wrong-3'.*'wrong-4'.*\].*</div>"
@@ -551,8 +545,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
 
         """)
 
-        problem = new_loncapa_problem(xml_str)
-        problem.seed = 723
+        problem = new_loncapa_problem(xml_str, seed=723)
         the_html = problem.get_html()
 
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'wrong-3'.*'correct-2'.*'wrong-2'.*'wrong-4'.*\].*</div>")
