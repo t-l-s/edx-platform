@@ -55,4 +55,3 @@ def test_capa_system():
 def new_loncapa_problem(xml, capa_system=None, seed=723):
     """Construct a `LoncapaProblem` suitable for unit tests."""
     return LoncapaProblem(xml, id='1', seed=seed, capa_system=capa_system or test_capa_system())
-

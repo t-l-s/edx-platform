@@ -1,11 +1,8 @@
+"""Tests the capa shuffle and name-masking."""
+
 import unittest
-from lxml import etree
-import os
 import textwrap
 
-import mock
-
-from .response_xml_factory import StringResponseXMLFactory, CustomResponseXMLFactory
 from . import test_capa_system, new_loncapa_problem
 
 

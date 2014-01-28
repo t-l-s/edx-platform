@@ -459,7 +459,7 @@ class LoncapaProblem(object):
         correct_choice = correct_choices[index]
         solution_id = correct_choice.get('explanation-id')
 
-        # Put together the result, pushing most of the work onto rnd.shuffle() 
+        # Put together the result, pushing most of the work onto rnd.shuffle()
         subset_choices = [correct_choice]
         rnd.shuffle(incorrect_choices)
         subset_choices += incorrect_choices[:num_incorrect]
@@ -483,7 +483,7 @@ class LoncapaProblem(object):
         if hasattr(self, 'answerpool_done'):
             return
         self.answerpool_done = True
-        
+
         choicegroups = tree.xpath("//choicegroup[@answer-pool]")
 
         # Uses self.seed -- but want to randomize every time reaches this problem,

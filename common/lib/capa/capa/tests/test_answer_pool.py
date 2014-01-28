@@ -9,7 +9,6 @@ from . import test_capa_system, new_loncapa_problem
 from capa.responsetypes import LoncapaProblemError
 
 
-
 class CapaAnswerPoolTest(unittest.TestCase):
     '''
     Testing class
@@ -231,7 +230,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
 
         with self.assertRaises(LoncapaProblemError):
             problem = new_loncapa_problem(xml_str)
-            the_html = problem.get_html()
+            problem.get_html()
 
     def test_answer_pool_5_choices_1_multiplechoiceresponse_seed1(self):
         xml_str = textwrap.dedent("""
