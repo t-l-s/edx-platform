@@ -1444,6 +1444,24 @@ class ContentStoreTest(ModuleStoreTestCase):
         # permissions should still be there for the other course
         self.assertTrue(are_permissions_roles_seeded(second_course_id))
 
+    def test_course_enrollments_on_delete(self):
+        """Test course deletion doesn't remove course enrollments"""
+        test_course_data = self.assert_created_course(number_suffix=uuid4().hex)
+        course_id = _get_course_id(test_course_data)
+        # test that on creating a course user gets its 'student' role as default
+        self.assertEqual(CourseEnrollment.enrollment_counts(course_id).get('total'), 1)
+        self.assertEqual(self.user.roles.count(), 1)
+        self.assertEqual(self.user.roles.all()[0].name, 'Student')
+        delete_course_and_groups(course_id, commit=True)
+        # test that course enrollments are not deleted but user student role for this course is deleted
+        self.assertEqual(CourseEnrollment.enrollment_counts(course_id).get('total'), 1)
+        self.assertEqual(self.user.roles.count(), 0)
+
+        # test that again creating same role user will get his student role back
+        test_course_data = self.assert_created_course(number_suffix=uuid4().hex)
+        self.assertEqual(self.user.roles.count(), 1)
+        self.assertEqual(self.user.roles.all()[0].name, 'Student')
+
     def test_create_course_duplicate_course(self):
         """Test new course creation - error path"""
         self.client.ajax_post('/course', self.course_data)
