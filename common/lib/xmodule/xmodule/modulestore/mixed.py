@@ -5,19 +5,22 @@ In this way, courses can be served up both - say - XMLModuleStore or MongoModule
 
 """
 
+import re
+from importlib import import_module
+import logging
+from xblock.fields import Reference, ReferenceList, String
+
 from . import ModuleStoreWriteBase
 from xmodule.modulestore.django import create_modulestore_instance, loc_mapper
-import logging
 from xmodule.modulestore import Location
-from xblock.fields import Reference, ReferenceList, String
-from xmodule.modulestore.locator import CourseLocator, Locator, BlockUsageLocator
+from xmodule.modulestore.locator import CourseLocator, BlockUsageLocator
 from xmodule.modulestore.exceptions import InsufficientSpecificationError, ItemNotFoundError
 from xmodule.modulestore.parsers import ALLOWED_ID_CHARS
-import re
 
 log = logging.getLogger(__name__)
 
 
+# TODO change from use_locations to actually using the class of the app's references?
 class MixedModuleStore(ModuleStoreWriteBase):
     """
     ModuleStore knows how to route requests to the right persistence ms and how to convert any
@@ -28,7 +31,8 @@ class MixedModuleStore(ModuleStoreWriteBase):
         Initialize a MixedModuleStore. Here we look into our passed in kwargs which should be a
         collection of other modulestore configuration informations
 
-        :param reference_type: either Location or Locator to indicate what type of reference this app
+        :param reference_type: either a class object such as Locator or Location or the fully
+        qualified dot-path to that class def to indicate what type of reference the app
         uses.
         """
         super(MixedModuleStore, self).__init__(**kwargs)
@@ -39,7 +43,14 @@ class MixedModuleStore(ModuleStoreWriteBase):
         if reference_type is None:
             log.warn("reference_type not specified in MixedModuleStore settings. %s",
                 "Will default temporarily to the to-be-deprecated Location.")
-        self.use_locations = (reference_type != 'Locator')
+            self.reference_type = Location
+        elif isinstance(reference_type, basestring):
+            module_path, _, class_name = reference_type.rpartition('.')
+            class_ = getattr(import_module(module_path), class_name)
+            self.reference_type = class_
+        else:
+            self.reference_type = reference_type
+
         if 'default' not in stores:
             raise Exception('Missing a default modulestore in the MixedModuleStore __init__ method.')
 
@@ -56,9 +67,14 @@ class MixedModuleStore(ModuleStoreWriteBase):
         For a given course_id, look in the mapping table and see if it has been pinned
         to a particular modulestore
         """
+        # TODO when this becomes a router capable of handling more than one r/w backend
+        # we'll need to generalize this to handle mappings from old Locations w/o full
+        # course_id in much the same way as loc_mapper().translate_location does.
         mapping = self.mappings.get(course_id, 'default')
         return self.modulestores[mapping]
 
+    # TODO move the location converters to a helper class which returns a converter object w/ 2
+    # methods: convert_xblock and convert_reference. Then have mixed get the converter and use it.
     def _locator_to_location(self, reference):
         """
         Convert the referenced locator to a location casting to and from a string as necessary
@@ -83,7 +99,7 @@ class MixedModuleStore(ModuleStoreWriteBase):
         """
         Convert the reference to the type the persistence layer wants
         """
-        if issubclass(store.reference_type, Location if self.use_locations else Locator):
+        if issubclass(store.reference_type, self.reference_type):
             return reference
         if store.reference_type == Location:
             return self._locator_to_location(reference)
@@ -93,7 +109,7 @@ class MixedModuleStore(ModuleStoreWriteBase):
         """
         Convert the reference to the type the application wants
         """
-        if issubclass(store.reference_type, Location if self.use_locations else Locator):
+        if issubclass(store.reference_type, self.reference_type):
             return reference
         if store.reference_type == Location:
             return self._location_to_locator(course_id, reference)
@@ -128,7 +144,7 @@ class MixedModuleStore(ModuleStoreWriteBase):
         Change all reference fields in this xblock to the type expected by the persistence layer
         """
         string_converter = self._get_string_converter(
-            course_id, store.reference_type, xblock.location
+            course_id, store.reference_type, xblock.scope_ids.usage_id
         )
         return self._xblock_adaptor_iterator(
             self._incoming_reference_adaptor, string_converter, store, course_id, xblock
@@ -139,7 +155,7 @@ class MixedModuleStore(ModuleStoreWriteBase):
         Change all reference fields in this xblock to the type expected by the persistence layer
         """
         string_converter = self._get_string_converter(
-            course_id, xblock.location.__class__, xblock.location
+            course_id, xblock.scope_ids.usage_id.__class__, xblock.scope_ids.usage_id
         )
         return self._xblock_adaptor_iterator(
             self._outgoing_reference_adaptor, string_converter, store, course_id, xblock
@@ -152,9 +168,7 @@ class MixedModuleStore(ModuleStoreWriteBase):
         Return a closure which finds and replaces all embedded links in a string field
         with the correct rewritten link for the target type
         """
-        if self.use_locations and reference_type == Location:
-            return lambda field, xblock: None
-        if not self.use_locations and issubclass(reference_type, Locator):
+        if issubclass(self.reference_type, reference_type):
             return lambda field, xblock: None
         if isinstance(from_base_addr, Location):
             def mapper(found_id):
@@ -224,9 +238,8 @@ class MixedModuleStore(ModuleStoreWriteBase):
             raise Exception("Must pass in a course_id when calling get_items()")
 
         store = self._get_modulestore_for_courseid(course_id or getattr(location, 'package_id'))
-        # translate won't work w/ missing fields so work around it
-        if store.reference_type == Location:
-            if not self.use_locations:
+        if not issubclass(self.reference_type, store.reference_type):
+            if store.reference_type == Location:
                 if getattr(location, 'block_id', False):
                     location = self._incoming_reference_adaptor(store, course_id, location)
                 else:
@@ -237,8 +250,7 @@ class MixedModuleStore(ModuleStoreWriteBase):
                         category=qualifiers.get('category', None),
                         name=None
                     )
-        else:
-            if self.use_locations:
+            else:
                 if not isinstance(location, Location):
                     location = Location(location)
                 try:
@@ -269,6 +281,7 @@ class MixedModuleStore(ModuleStoreWriteBase):
             # only surface courses that have a mapping entry, for example the XMLModuleStore will
             # slurp up anything that is on disk, however, we don't want to surface those to
             # consumers *unless* there is an explicit mapping in the configuration
+            # TODO obviously this filtering only applies to filebased stores
             if key != 'default':
                 for course in store_courses:
                     # make sure that the courseId is mapped to the store in question
@@ -294,7 +307,7 @@ class MixedModuleStore(ModuleStoreWriteBase):
             # translate won't work w/ missing fields so work around it
             if store.reference_type == Location:
                 # takes the course_id: figure out if this is old or new style
-                if not self.use_locations:
+                if not issubclass(store.reference_type, self.reference_type):
                     if isinstance(course_id, basestring):
                         course_id = CourseLocator(package_id=course_id, branch='published')
                     course_location = loc_mapper().translate_locator_to_location(course_id, get_course=True)
@@ -364,11 +377,13 @@ class MixedModuleStore(ModuleStoreWriteBase):
         Update the xblock persisted to be the same as the given for all types of fields
         (content, children, and metadata) attribute the change to the given user.
         """
-        if self.use_locations:
-            raise NotImplementedError
-
-        locator = xblock.location
-        course_id = locator.package_id
+        if self.reference_type == Location:
+            # NOTE: very expensive but probably less expensive than get_parent?
+            locator = loc_mapper().translate_location_to_course_locator(None, xblock.scope_ids.usage_id)
+            course_id = loc_mapper().translate_locator_to_location(locator, get_course=True)
+        else:
+            locator = xblock.scope_ids.usage_id
+            course_id = locator.package_id
         store = self._get_modulestore_for_courseid(course_id)
 
         # if an xblock, convert its contents to correct addr scheme
@@ -381,9 +396,13 @@ class MixedModuleStore(ModuleStoreWriteBase):
         """
         Delete the given item from persistence.
         """
-        if self.use_locations:
-            raise NotImplementedError
+        if self.reference_type == Location:
+            # NOTE: very expensive but probably less expensive than get_parent?
+            locator = loc_mapper().translate_location_to_course_locator(None, location)
+            course_id = loc_mapper().translate_locator_to_location(locator, get_course=True)
+        else:
+            course_id = location.package_id
+        store = self._get_modulestore_for_courseid(course_id)
 
-        store = self._get_modulestore_for_courseid(location.package_id)
-        decoded_ref = self._incoming_reference_adaptor(store, location.package_id, location)
+        decoded_ref = self._incoming_reference_adaptor(store, course_id, location)
         return store.delete_item(decoded_ref, **kwargs)
