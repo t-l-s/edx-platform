@@ -33,9 +33,11 @@ class CapaShuffleTest(unittest.TestCase):
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'Banana'.*'Apple'.*'Chocolate'.*'Donut'.*\].*</div>")
         # Check that choice name masking is enabled and that unmasking works
         response = problem.responders.values()[0]
-        self.assertTrue(hasattr(response, 'is_shuffled'))
         self.assertTrue(hasattr(response, 'is_masked'))
         self.assertEqual(response.unmask_order(), ['choice_1', 'choice_0', 'choice_2', 'choice_3'])
+        self.assertEqual(the_html, problem.get_html(), 'should be able to call get_html() twice')
+        self.assertIsNotNone(problem.tree.xpath('//choicegroup[@shuffle-done="done"]'))
+
 
     def test_shuffle_custom_names(self):
         xml_str = textwrap.dedent("""
@@ -54,9 +56,10 @@ class CapaShuffleTest(unittest.TestCase):
         # B A C D
         # Check that the custom name= names come through
         response = problem.responders.values()[0]
-        self.assertTrue(hasattr(response, 'is_shuffled'))
         self.assertTrue(hasattr(response, 'is_masked'))
         self.assertEqual(response.unmask_order(), ['choice_0', 'choice_aaa', 'choice_1', 'choice_ddd'])
+        self.assertIsNotNone(problem.tree.xpath('//choicegroup[@shuffle-done="done"]'))
+
 
     def test_shuffle_different_seed(self):
         xml_str = textwrap.dedent("""
@@ -89,9 +92,10 @@ class CapaShuffleTest(unittest.TestCase):
         the_html = problem.get_html()
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'Apple'.*\].*</div>")
         response = problem.responders.values()[0]
-        self.assertTrue(hasattr(response, 'is_shuffled'))
         self.assertEqual(response.unmask_order(), ['choice_0'])
         self.assertEqual(response.unmask_name('mask_0'), 'choice_0')
+        self.assertIsNotNone(problem.tree.xpath('//choicegroup[@shuffle-done="done"]'))
+
 
     def test_shuffle_6_choices(self):
         xml_str = textwrap.dedent("""
@@ -130,8 +134,7 @@ class CapaShuffleTest(unittest.TestCase):
         problem.seed = 0
         the_html = problem.get_html()
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'Apple'.*'Banana'.*'Chocolate'.*'Donut'.*\].*</div>")
-        response = problem.responders.values()[0]
-        self.assertFalse(hasattr(response, 'is_shuffled'))
+        self.assertEquals(problem.tree.xpath('//choicegroup[@shuffle-done="done"]'), [])
 
     def test_shuffle_fixed_head_end(self):
         xml_str = textwrap.dedent("""

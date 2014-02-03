@@ -60,9 +60,14 @@ class CapaAnswerPoolTest(unittest.TestCase):
         # [('choice_3', u'wrong-3'), ('choice_5', u'correct-2'), ('choice_1', u'wrong-2'), ('choice_4', u'wrong-4')]
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'wrong-3'.*'correct-2'.*'wrong-2'.*'wrong-4'.*\].*</div>")
         self.assertRegexpMatches(the_html, r"<div>\{.*'1_solution_2'.*\}</div>")
-        # Calling get_html multiple times should yield the same thing
-        the_html2 = problem.get_html()
-        self.assertEquals(the_html, the_html2)
+        self.assertEqual(the_html, problem.get_html(), 'should be able to call get_html() twice')
+        self.assertIsNotNone(problem.tree.xpath('//choicegroup[@answer-pool-done="done"]'))
+        # Check about masking
+        response = problem.responders.values()[0]
+        self.assertTrue(hasattr(response, 'is_masked'))
+        self.assertEqual(response.unmask_order(), ['choice_3', 'choice_5', 'choice_1', 'choice_4'])
+
+
 
     def test_answer_pool_4_choices_1_multiplechoiceresponse_seed2(self):
         xml_str = textwrap.dedent("""
@@ -106,6 +111,11 @@ class CapaAnswerPoolTest(unittest.TestCase):
         # [('choice_0', u'wrong-1'), ('choice_4', u'wrong-4'), ('choice_3', u'wrong-3'), ('choice_2', u'correct-1')]
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'wrong-1'.*'wrong-4'.*'wrong-3'.*'correct-1'.*\].*</div>")
         self.assertRegexpMatches(the_html, r"<div>\{.*'1_solution_1'.*\}</div>")
+        self.assertIsNotNone(problem.tree.xpath('//choicegroup[@answer-pool-done="done"]'))
+        # Check about masking
+        response = problem.responders.values()[0]
+        self.assertTrue(hasattr(response, 'is_masked'))
+        self.assertEqual(response.unmask_order(), ['choice_0', 'choice_4', 'choice_3', 'choice_2'])
 
     def test_no_answer_pool_4_choices_1_multiplechoiceresponse(self):
         xml_str = textwrap.dedent("""
@@ -148,6 +158,12 @@ class CapaAnswerPoolTest(unittest.TestCase):
         the_html = problem.get_html()
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'wrong-1'.*'wrong-2'.*'correct-1'.*'wrong-3'.*'wrong-4'.*'correct-2'.*\].*</div>")
         self.assertRegexpMatches(the_html, r"<div>\{.*'1_solution_1'.*'1_solution_2'.*\}</div>")
+        self.assertEqual(the_html, problem.get_html(), 'should be able to call get_html() twice')
+        self.assertEquals(problem.tree.xpath('//choicegroup[@answer-pool-done="done"]'), [])
+        # Check about masking
+        response = problem.responders.values()[0]
+        self.assertFalse(hasattr(response, 'is_masked'))
+
 
     def test_0_answer_pool_4_choices_1_multiplechoiceresponse(self):
         xml_str = textwrap.dedent("""
@@ -190,6 +206,9 @@ class CapaAnswerPoolTest(unittest.TestCase):
         the_html = problem.get_html()
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'wrong-1'.*'wrong-2'.*'correct-1'.*'wrong-3'.*'wrong-4'.*'correct-2'.*\].*</div>")
         self.assertRegexpMatches(the_html, r"<div>\{.*'1_solution_1'.*'1_solution_2'.*\}</div>")
+        self.assertEquals(problem.tree.xpath('//choicegroup[@answer-pool-done="done"]'), [])
+        response = problem.responders.values()[0]
+        self.assertFalse(hasattr(response, 'is_masked'))
 
     def test_invalid_answer_pool(self):
         xml_str = textwrap.dedent("""
@@ -273,6 +292,10 @@ class CapaAnswerPoolTest(unittest.TestCase):
         the_html = problem.get_html()
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'correct-2'.*'wrong-1'.*'wrong-2'.*.*'wrong-3'.*'wrong-4'.*\].*</div>")
         self.assertRegexpMatches(the_html, r"<div>\{.*'1_solution_2'.*\}</div>")
+        response = problem.responders.values()[0]
+        self.assertTrue(hasattr(response, 'is_masked'))
+        self.assertEqual(response.unmask_order(), ['choice_5', 'choice_0', 'choice_1', 'choice_3', 'choice_4'])
+
 
     def test_answer_pool_2_multiplechoiceresponses_seed1(self):
         xml_str = textwrap.dedent("""
