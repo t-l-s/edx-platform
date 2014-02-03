@@ -299,7 +299,7 @@ class OptionInput(InputTypeBase):
 
     Example:
 
-    <optioninput options="('Up','Down')" correct="Up"/><text>The location of the sky</text>
+    <optioninput options="('Up','Down')" label="Where is the sky?" correct="Up"/><text>The location of the sky</text>
 
     # TODO: allow ordering to be randomized
     """
@@ -354,7 +354,7 @@ class ChoiceGroup(InputTypeBase):
 
     Example:
 
-    <choicegroup>
+    <choicegroup label="Which foil?">
       <choice correct="false" name="foil1">
         <text>This is foil One.</text>
       </choice>
@@ -537,7 +537,7 @@ class TextLine(InputTypeBase):
     is used e.g. for embedding simulations turned into questions.
 
     Example:
-        <textline math="1" trailing_text="m/s" />
+        <textline math="1" trailing_text="m/s" label="How fast is a cheetah?" />
 
     This example will render out a text line with a math preview and the text 'm/s'
     after the end of the text line.
@@ -1501,7 +1501,7 @@ class ChoiceTextGroup(InputTypeBase):
         select the correct choice and fill in numbers to make it accurate.
       <endouttext/>
       <choicetextresponse>
-        <radiotextgroup>
+        <radiotextgroup label="What is the correct choice?">
           <choice correct="false">The lowest number rolled was:
             <decoy_input/> and the highest number rolled was:
             <decoy_input/> .</choice>
@@ -1524,7 +1524,7 @@ class ChoiceTextGroup(InputTypeBase):
         select the correct choices and fill in numbers to make them accurate.
       <endouttext/>
       <choicetextresponse>
-        <checkboxtextgroup>
+        <checkboxtextgroup label="What is the answer?">
              <choice correct="true">
                 The lowest number selected was <numtolerance_input answer="1.4142" tolerance="0.01"/>
              </choice>
