@@ -67,8 +67,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
         self.assertTrue(hasattr(response, 'is_masked'))
         self.assertEqual(response.unmask_order(), ['choice_3', 'choice_5', 'choice_1', 'choice_4'])
 
-
-
     def test_answer_pool_4_choices_1_multiplechoiceresponse_seed2(self):
         xml_str = textwrap.dedent("""
             <problem>
@@ -163,7 +161,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
         # Check about masking
         response = problem.responders.values()[0]
         self.assertFalse(hasattr(response, 'is_masked'))
-
 
     def test_0_answer_pool_4_choices_1_multiplechoiceresponse(self):
         xml_str = textwrap.dedent("""
@@ -295,7 +292,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
         response = problem.responders.values()[0]
         self.assertTrue(hasattr(response, 'is_masked'))
         self.assertEqual(response.unmask_order(), ['choice_5', 'choice_0', 'choice_1', 'choice_3', 'choice_4'])
-
 
     def test_answer_pool_2_multiplechoiceresponses_seed1(self):
         xml_str = textwrap.dedent("""

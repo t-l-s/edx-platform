@@ -179,7 +179,7 @@ class LoncapaProblem(object):
         # dictionary of InputType objects associated with this problem
         #   input_id string -> InputType object
         self.inputs = {}
-        
+
         # Run response late_transforms last (see MultipleChoiceResponse)
         for response in self.responders.values():
             if hasattr(response, 'late_transforms'):
@@ -440,7 +440,7 @@ class LoncapaProblem(object):
             if mult_choice_response.get('targeted-done') is not None:
                 continue
             mult_choice_response.set('targeted-done', 'done')
-            
+
             # Grab the first choicegroup (there should only be one within each <multiplechoiceresponse> tag)
             choicegroup = mult_choice_response.xpath('./choicegroup[@type="MultipleChoice"]')[0]
             choices_list = list(choicegroup.iter('choice'))
@@ -818,4 +818,3 @@ class LoncapaProblem(object):
         for solution in tree.findall('.//solution'):
             solution.attrib['id'] = "%s_solution_%i" % (self.problem_id, solution_id)
             solution_id += 1
-

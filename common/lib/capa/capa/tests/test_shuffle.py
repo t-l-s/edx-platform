@@ -38,7 +38,6 @@ class CapaShuffleTest(unittest.TestCase):
         self.assertEqual(the_html, problem.get_html(), 'should be able to call get_html() twice')
         self.assertIsNotNone(problem.tree.xpath('//choicegroup[@shuffle-done="done"]'))
 
-
     def test_shuffle_custom_names(self):
         xml_str = textwrap.dedent("""
             <problem>
@@ -59,7 +58,6 @@ class CapaShuffleTest(unittest.TestCase):
         self.assertTrue(hasattr(response, 'is_masked'))
         self.assertEqual(response.unmask_order(), ['choice_0', 'choice_aaa', 'choice_1', 'choice_ddd'])
         self.assertIsNotNone(problem.tree.xpath('//choicegroup[@shuffle-done="done"]'))
-
 
     def test_shuffle_different_seed(self):
         xml_str = textwrap.dedent("""
@@ -95,7 +93,6 @@ class CapaShuffleTest(unittest.TestCase):
         self.assertEqual(response.unmask_order(), ['choice_0'])
         self.assertEqual(response.unmask_name('mask_0'), 'choice_0')
         self.assertIsNotNone(problem.tree.xpath('//choicegroup[@shuffle-done="done"]'))
-
 
     def test_shuffle_6_choices(self):
         xml_str = textwrap.dedent("""

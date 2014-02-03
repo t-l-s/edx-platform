@@ -32,7 +32,6 @@ from sys import float_info
 from collections import namedtuple
 from shapely.geometry import Point, MultiPoint
 
-from random import Random
 
 # specific library imports
 from calc import evaluator, UndefinedVariable
@@ -753,7 +752,7 @@ class MultipleChoiceResponse(LoncapaResponse):
             if response.get("shuffle") == "true" or (ans_str is not None and ans_str != "0"):
                 self.is_masked = True
                 self.mask_dict = {}
-                rng = Random(self.context["seed"])
+                rng = random.Random(self.context["seed"])
                 # e.g. mask_ids = [3, 1, 0, 2]
                 mask_ids = range(len(response))
                 rng.shuffle(mask_ids)
@@ -867,7 +866,6 @@ class MultipleChoiceResponse(LoncapaResponse):
         middle = []  # only this one gets shuffled
         tail = []
         at_head = True
-        index = 0
         for choice in choices:
             if at_head and choice.get('fixed') == 'true':
                 head.append(choice)
@@ -896,7 +894,7 @@ class MultipleChoiceResponse(LoncapaResponse):
 
         # Uses self.seed -- but want to randomize every time reaches this problem,
         # so problem's "randomization" should be set to "always"
-        rnd = Random(self.context['seed'])
+        rnd = random.Random(self.context['seed'])
 
         for choicegroup in choicegroups:
             num_str = choicegroup.get('answer-pool')
