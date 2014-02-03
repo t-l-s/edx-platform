@@ -185,25 +185,24 @@ def _accessible_courses_list_from_groups(request):
     List all courses available to the logged in user by reversing access group names
     """
     courses_list = []
-    course_id_list = []
+    course_ids = set()
 
-    user_staff_group_names = request.user.groups.filter(Q(name__startswith='instructor_') | Q(name__startswith='staff_')).values_list('name', flat=True)
-    # first try to get new and unique group names (course_id's) before querying database
+    user_staff_group_names = request.user.groups.filter(
+        Q(name__startswith='instructor_') | Q(name__startswith='staff_')).values_list('name', flat=True)
+
+    # We can only get course_ids from role names with the new format (instructor_org/number/run or
+    # instructor_org.number.run but not instructor_number) and only for those course_ids which do
+    # not have '.' in the number or run (instructor_org.number.run and not instructor_org.num.ber.run).
+    # So if for any role name either of these conditions fail do not proceed."
     for user_staff_group_name in user_staff_group_names:
         # to avoid duplication try to convert all course_id's to new format e.g. "edX.course.run"
         course_id = re.sub(r'^(instructor_|staff_)', '', user_staff_group_name).replace('/', '.')
         if len(course_id.split('.')) == 3:
-            if course_id not in course_id_list:
-                course_id_list.append(course_id)
+            course_ids.add(course_id)
         else:
-            # old group format: course number only e.g. "course"
-            # not preferable (so return)
-            #
-            # Note: We can try to get course with only course number if there is exactly
-            #  one course with this course number
-            return (False, courses_list)
+            return (False, [])
 
-    for course_id in course_id_list:
+    for course_id in list(course_ids):
         # new group format: id of course e.g. "edX.course.run"
         org, course, name = course_id.split('.')
         course_location = Location('i4x', org, course, 'course', name)
@@ -213,7 +212,7 @@ def _accessible_courses_list_from_groups(request):
         except ItemNotFoundError:
             course = None
 
-        if not course:
+        if course is None:
             # since access groups are being stored in lowercase, also do a case-insensitive search
             # for the potential course id.
             course_search_location = bson.son.SON({
@@ -234,9 +233,9 @@ def _accessible_courses_list_from_groups(request):
                     course = modulestore('direct').get_item(course_location)
                     courses_list.append(course)
                 except ItemNotFoundError:
-                    return (False, courses_list)
+                    return (False, [])
             else:
-                return (False, courses_list)
+                return (False, [])
 
     return (True, courses_list)
 
