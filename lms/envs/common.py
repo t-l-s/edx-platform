@@ -498,6 +498,7 @@ LANGUAGE_CODE = 'en'  # http://www.i18nguy.com/unicode/language-identifiers.html
 
 # Sourced from http://www.localeplanet.com/icu/ and wikipedia
 LANGUAGES = (
+    ('en', u'English'),
     ('eo', u'Dummy Language (Esperanto)'),  # Dummy languaged used for testing
 
     ('ach', u'Acholi'),  # Acoli
