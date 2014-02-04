@@ -1444,21 +1444,42 @@ class ContentStoreTest(ModuleStoreTestCase):
         # permissions should still be there for the other course
         self.assertTrue(are_permissions_roles_seeded(second_course_id))
 
-    def test_course_enrollments_on_delete(self):
-        """Test course deletion doesn't remove course enrollments"""
+    def test_course_enrollments_and_roles_on_delete(self):
+        """
+        Test that course deletion doesn't remove course enrollments but removes user's roles
+        """
         test_course_data = self.assert_created_course(number_suffix=uuid4().hex)
         course_id = _get_course_id(test_course_data)
-        # test that on creating a course user gets its 'student' role as default
+
+        # test that a user gets his enrollment and its 'student' role as default on creating a course
         self.assertEqual(CourseEnrollment.enrollment_counts(course_id).get('total'), 1)
+        self.assertTrue(CourseEnrollment.is_enrolled(self.user, course_id))
         self.assertEqual(self.user.roles.count(), 1)
         self.assertEqual(self.user.roles.all()[0].name, 'Student')
+
         delete_course_and_groups(course_id, commit=True)
-        # test that course enrollments are not deleted but user student role for this course is deleted
+        # check that user's enrollment for this course is not deleted
         self.assertEqual(CourseEnrollment.enrollment_counts(course_id).get('total'), 1)
+        self.assertTrue(CourseEnrollment.is_enrolled(self.user, course_id))
+        # check that user has no role for this course after deleting it
         self.assertEqual(self.user.roles.count(), 0)
 
-        # test that again creating same role user will get his student role back
+    def test_course_enrollments_and_roles_after_create_same_course_again(self):
+        """
+        Test that creating same course again after deleting it doesn't stop user to get
+        their default 'Student' role
+        """
         test_course_data = self.assert_created_course(number_suffix=uuid4().hex)
+        course_id = _get_course_id(test_course_data)
+
+        # delete and recreate same course with same user
+        delete_course_and_groups(course_id, commit=True)
+        self.assert_created_course(number_suffix=uuid4().hex)
+
+        # check that user has enrollment for this course
+        self.assertEqual(CourseEnrollment.enrollment_counts(course_id).get('total'), 1)
+        self.assertTrue(CourseEnrollment.is_enrolled(self.user, course_id))
+        # check that user has his default student role for this course
         self.assertEqual(self.user.roles.count(), 1)
         self.assertEqual(self.user.roles.all()[0].name, 'Student')
 
