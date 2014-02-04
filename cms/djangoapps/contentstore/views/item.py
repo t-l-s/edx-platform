@@ -118,8 +118,13 @@ def xblock_handler(request, tag=None, package_id=None, branch=None, version_guid
                 # can bind to it correctly
                 component.runtime.wrappers.append(partial(wrap_xblock, 'StudioRuntime'))
 
+                # TODO provide a real context...
+                context = {
+                    'read_only': True
+                }
+
                 try:
-                    editor_fragment = component.render('studio_view')
+                    editor_fragment = component.render('studio_view', context)
                 # catch exceptions indiscriminately, since after this point they escape the
                 # dungeon and surface as uneditable, unsaveable, and undeletable
                 # component-goblins.
@@ -129,7 +134,7 @@ def xblock_handler(request, tag=None, package_id=None, branch=None, version_guid
 
                 modulestore().save_xmodule(component)
 
-                preview_fragment = get_preview_fragment(request, component)
+                preview_fragment = get_preview_fragment(request, component, context)
 
                 hashed_resources = OrderedDict()
                 for resource in editor_fragment.resources + preview_fragment.resources:
@@ -196,7 +201,6 @@ def xblock_handler(request, tag=None, package_id=None, branch=None, version_guid
             "Only instance creation is supported without a package_id.",
             content_type="text/plain"
         )
-
 
 def _save_item(request, usage_loc, item_location, data=None, children=None, metadata=None, nullout=None,
                grader_type=None, publish=None):
