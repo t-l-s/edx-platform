@@ -979,19 +979,25 @@ class CapaMixin(CapaFields):
         and record the display_order.
         This only changes names for responses that are masked, otherwise a NOP.
         """
-        answers = event_info['answers']
-        # answers is like: {u'i4x-Stanford-CS99-problem-dada976e76f34c24bc8415039dee1300_2_1': u'choice_1'}
-        # self.lcp.responders is like: {<Element multiplechoiceresponse at 0x109ba6b40>: <capa.responsetypes.MultipleChoiceResponse object at 0x109bb8bd0>}
+        # answers is like: {u'i4x-Stanford-CS99-problem-dada976e76f34c24bc8415039dee1300_2_1': u'mask_0'}
         # Each response values has an answer_id which matches the key in answers.
         for response in self.lcp.responders.values():
-            if hasattr(response, 'is_masked') and response.answer_id in answers:
-                self.lcp.do_answer_pool(self.lcp.tree)  # so display_order can be computed
-                print 'event_info before:', event_info
-                # 1. Change the answer to use the regular choice_0 naming
-                answers[response.answer_id] = response.unmask_name(answers[response.answer_id])
-                # 2. Record the shuffled ordering
+            if hasattr(response, 'is_masked'):
+                # Just programming defensively, we don't assume much about the structure of event_info,
+                # but check for the existence of each thing to unmask
+
+                # 1. answers/id
+                answer =  event_info.get('answers', {}).get(response.answer_id)
+                if answer is not None:
+                    event_info['answers'][response.answer_id] = response.unmask_name(answer)
+
+                # 2. state/student_answers/id
+                answer = event_info.get('state', {}).get('student_answers', {}).get(response.answer_id)
+                if answer is not None:
+                    event_info['state']['student_answers'][response.answer_id] = response.unmask_name(answer)
+
+                # 3. Record the shuffled ordering
                 event_info['display_order'] = {response.answer_id: response.unmask_order()}
-                print 'event_info after:', event_info
 
     def pretty_print_seconds(self, num_seconds):
         """
