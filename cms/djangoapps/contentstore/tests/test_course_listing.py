@@ -56,6 +56,9 @@ class TestCourseListing(ModuleStoreTestCase):
         )
 
     def _create_course_with_access_groups(self, course_location, access_group_format='New'):
+        """
+        Create dummy course with 'CourseFactory' and access groups with provided access_group_format
+        """
         course_locator = loc_mapper().translate_location(
             course_location.course_id, course_location, False, True
         )
@@ -66,6 +69,7 @@ class TestCourseListing(ModuleStoreTestCase):
         )
 
         for role in [CourseInstructorRole, CourseStaffRole]:
+            # pylint: disable=protected-access
             groupnames = role(course_locator)._group_names
             if access_group_format == 'Older':
                 # Create access groups with course_name only: 'instructor_run'

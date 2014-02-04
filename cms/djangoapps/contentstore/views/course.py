@@ -180,6 +180,7 @@ def _accessible_courses_list(request):
     return courses
 
 
+# pylint: disable=invalid-name
 def _accessible_courses_list_from_groups(request):
     """
     List all courses available to the logged in user by reversing access group names
