@@ -1,6 +1,89 @@
 // studio - views - container
 // ==========================
 
+
+// container - mast
+// ==========================
+
+
+
+// xblock - default styling
+// ==========================
+section.xblock-wrapper {
+  border: 1px solid $gray-l4;
+
+  header.xblock-header {
+    background-color: $gray-l6;
+    border-bottom: $gray-l4;
+    min-height: $baseline;
+    padding: $baseline/2;
+  }
+
+  article.xblock-render {
+  }
+
+  ol.xblock-list {}
+
+  li.xblock-listitem {
+    margin-bottom: $baseline;
+  }
+}
+
+// container - content
+// ==========================
+
+body.view-container {
+
+
+  // xBlock Page Level Styling
+  section.xblock-wrapper-pagelevel {
+    border: none;
+
+    header.xblock-header-pagelevel {
+      margin-bottom: $baseline;
+      border-radius: $baseline/5;
+      box-shadow: 0 0 1px $shadow-l1 inset;
+    }
+
+    article.xblock-render-pagelevel {
+      background: none;
+    }
+    ol.xblock-list-pagelevel {}
+    li.xblock-listitem-pagelevel {}
+  }
+
+  // xBlock Nesting Level Styling
+  section.xblock-wrapper-nestinglevel {
+    border: none;
+
+
+    header.xblock-header-nestinglevel {
+      margin-bottom: $baseline/2;
+      background: none;
+    }
+    article.xblock-render-nestinglevel {}
+    ol.xblock-list-nestinglevel {}
+    li.xblock-listitem-nestinglevel {}
+  }
+
+  // xBlock Element Level Styling
+  section.xblock-wrapper-elementlevel {
+    border-radius: $baseline/4;
+    background-color: $white;
+
+    header.xblock-header-elementlevel {
+
+    }
+
+    article.xblock-render-elementlevel {
+      padding: $baseline;
+    }
+  }
+}
+
+
+
+
 body.course.container,.view-container {
 
   .main-wrapper {
@@ -866,7 +949,7 @@ body.course.container,.view-container {
 
 // Editing Units from Courseware
 //uses similar styling as static-pages.scss
-body.unit {
+body.view-container {
 
   .component {
     padding-top: 30px;
@@ -879,14 +962,17 @@ body.unit {
       padding: $baseline/4 $baseline/2;
       top: 0;
       left: 0;
-      border-bottom: 1px solid $gray-l4;
-      background: $gray-l5;
     }
 
     .component-header {
       display: inline-block;
-      width: 50%;
-      vertical-align: middle;
+      overflow: hidden;
+      padding: $baseline/2 0px 0px $baseline/4;
+      max-width: 60%;
+      color: $gray-l1;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 300;
     }
 
     .component-actions {
@@ -911,7 +997,7 @@ body.unit {
 // Component Header Actions
 // uses similar styling as assets.scss, static-pages.scss
 
-body.unit {
+body.view-container {
 
   .component-actions {
 
@@ -936,6 +1022,7 @@ body.unit {
         .action-button-text {
           padding-left: 1px;
           vertical-align: bottom;
+          text-transform: uppercase;
           line-height: 17px;
         }
 
@@ -957,6 +1044,7 @@ body.unit {
 // Unit Page Sidebar
 
 .content-supplementary {
+  padding: $baseline;
 
   label {
     @extend %t-title8;
