@@ -12,6 +12,18 @@
 section.xblock-wrapper {
   border: 1px solid $gray-l4;
 
+  &.collapsed {
+
+      header.xblock-header {
+        min-height: $baseline*2;
+        line-height: $baseline*2;
+        border-radius: $baseline/5;
+      }
+      article.xblock-render {
+        display: none;
+      }
+    }
+
   header.xblock-header {
     background-color: $gray-l6;
     border-bottom: $gray-l4;
@@ -19,8 +31,7 @@ section.xblock-wrapper {
     padding: $baseline/2;
   }
 
-  article.xblock-render {
-  }
+  article.xblock-render {}
 
   ol.xblock-list {}
 
@@ -29,11 +40,11 @@ section.xblock-wrapper {
   }
 }
 
+
 // container - content
 // ==========================
 
 body.view-container {
-
 
   // xBlock Page Level Styling
   section.xblock-wrapper-pagelevel {
@@ -41,14 +52,16 @@ body.view-container {
 
     header.xblock-header-pagelevel {
       margin-bottom: $baseline;
-      border-radius: $baseline/5;
-      box-shadow: 0 0 1px $shadow-l1 inset;
+      box-shadow: 0 0 1px $black inset;
+      background: none;
     }
 
     article.xblock-render-pagelevel {
       background: none;
     }
+
     ol.xblock-list-pagelevel {}
+
     li.xblock-listitem-pagelevel {}
   }
 
@@ -61,8 +74,11 @@ body.view-container {
       margin-bottom: $baseline/2;
       background: none;
     }
+
     article.xblock-render-nestinglevel {}
+
     ol.xblock-list-nestinglevel {}
+
     li.xblock-listitem-nestinglevel {}
   }
 
@@ -71,14 +87,14 @@ body.view-container {
     border-radius: $baseline/4;
     background-color: $white;
 
-    header.xblock-header-elementlevel {
-
-    }
+    header.xblock-header-elementlevel {}
 
     article.xblock-render-elementlevel {
       padding: $baseline;
     }
   }
+
+  // basic collapsing behavior
 }
 
 
