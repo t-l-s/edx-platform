@@ -332,17 +332,6 @@ class TestDownloadtranscripts(Basetranscripts):
         del_cached_content(content_location)
         return content_location
 
-    def remove_subs_from_store(self, subs_id):
-        """Remove from store, if transcripts content exists."""
-        filename = 'subs_{0}.srt.sjson'.format(subs_id)
-        content_location = StaticContent.compute_location(
-            self.org, self.number, filename)
-        try:
-            content = contentstore().find(content_location)
-            contentstore().delete(content.get_id())
-        except NotFoundError:
-            pass
-
     def test_success_download_youtube(self):
         data = '<video youtube="1:JMD_ifUUfsU" />'
         modulestore().update_item(self.item_location, data)
@@ -518,17 +507,6 @@ class TestChecktranscripts(Basetranscripts):
         contentstore().save(content)
         del_cached_content(content_location)
         return content_location
-
-    def remove_subs_from_store(self, subs_id):
-        """Remove from store, if transcripts content exists."""
-        filename = 'subs_{0}.srt.sjson'.format(subs_id)
-        content_location = StaticContent.compute_location(
-            self.org, self.number, filename)
-        try:
-            content = contentstore().find(content_location)
-            contentstore().delete(content.get_id())
-        except NotFoundError:
-            pass
 
     def test_success_download_nonyoutube(self):
         subs_id = str(uuid4())
