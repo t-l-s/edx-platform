@@ -33,8 +33,6 @@ from capa.safe_exec import safe_exec
 
 from pytz import UTC
 
-from random import Random
-
 # extra things displayed after "show answers" is pressed
 solution_tags = ['solution']
 
@@ -506,7 +504,6 @@ class LoncapaProblem(object):
         """
         self.do_targeted_feedback(self.tree)
         html = contextualize_text(etree.tostring(self._extract_html(self.tree)), self.context)
-
         return html
 
     def handle_input_ajax(self, data):

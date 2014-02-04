@@ -32,7 +32,6 @@ from sys import float_info
 from collections import namedtuple
 from shapely.geometry import Point, MultiPoint
 
-
 # specific library imports
 from calc import evaluator, UndefinedVariable
 from . import correctmap
@@ -805,6 +804,7 @@ class MultipleChoiceResponse(LoncapaResponse):
     # mask_2 mask_0 ... so that a view-source of the names reveals nothing about
     # the original order. We introduce the masked names right at init time, so the
     # whole software stack works with just the one system of naming.
+    # A response with masking has its .is_masked attribute set.
     # We "unmask" the names, back to choice_0 style, only for the logs so they correspond
     # to how the problems look to the author.
     #
