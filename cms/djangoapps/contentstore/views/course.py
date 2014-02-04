@@ -200,7 +200,7 @@ def _accessible_courses_list_from_groups(request):
         if len(course_id.split('.')) == 3:
             course_ids.add(course_id)
         else:
-            return (False, [])
+            return False, []
 
     for course_id in list(course_ids):
         # new group format: id of course e.g. "edX.course.run"
@@ -227,17 +227,18 @@ def _accessible_courses_list_from_groups(request):
             })
             courses = modulestore().collection.find(course_search_location, fields=('_id'))
             if courses.count() == 1:
-                course_id = courses[0].get('_id')
-                course_location = Location('i4x', course_id.get('org'), course_id.get('course'), 'course', course_id.get('name'))
+                mongo_course_id = courses[0].get('_id')
+                course_location = Location('i4x', mongo_course_id.get('org'), mongo_course_id.get('course'),
+                                           'course', mongo_course_id.get('name'))
                 try:
                     course = modulestore('direct').get_item(course_location)
                     courses_list.append(course)
                 except ItemNotFoundError:
-                    return (False, [])
+                    return False, []
             else:
-                return (False, [])
+                return False, []
 
-    return (True, courses_list)
+    return True, courses_list
 
 
 @login_required
