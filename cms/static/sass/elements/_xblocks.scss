@@ -1,6 +1,6 @@
 // xblocks - default styling
 // ==========================
-// The following is the default styling structure and base for xblocks. As an early draft, the element tags are left here in the styling but the production version we will only have class labeling.
+// The following is the default styling structure and base for xblocks. Below is is older styling from the unit page, which will be refactored out slowly but is included here for reference of what styling has not yet been 'ported' to the container and xblock styling files.
 
 section.xblock-wrapper {
   border: 1px solid $gray-l4;
@@ -9,9 +9,16 @@ section.xblock-wrapper {
   background: $white;
   box-shadow: 0 1px 1px $shadow-l1;
 
+  //TODO - account for z-index issues that may steam from video player once container page is editable.
+
+  &:hover {
+    @include transition(all $tmg-f2 linear 0s);
+    box-shadow: 0px 0px 1px $shadow;
+  }
+
   header.xblock-header {
-    padding: $baseline/2;
-    min-height: $baseline;
+    line-height: $baseline*2.5;
+    padding: 0 0 0 $baseline*.75;
     border-bottom: 1px solid $gray-l4;
     border-radius: $baseline/5;
     border-radius: $baseline/5 $baseline/5 0 0;
@@ -28,14 +35,20 @@ section.xblock-wrapper {
       display: inline-block;
       width: 38%;
       text-align: right;
+
+      //TODO - Add in visibility changes here depending on whether or not xblock is editable.
     }
 
 
   }
 
-  article.xblock-render {}
+  article.xblock-render {
+    @extend %anim-fadeIn;
+  }
 
-  ol.xblock-list {}
+  ol.xblock-list {
+    padding-bottom: $baseline/2;
+  }
 
   li.xblock-listitem {
     margin-bottom: $baseline;
@@ -43,7 +56,7 @@ section.xblock-wrapper {
 }
 
 // xblocks - general action list styles
-// uses similar styling block as _outline.scss, should be separated or more cleanly inherited (#TODO)
+// uses similar styling block as _outline.scss, should be separated or more cleanly inherited from general xblocks styling. (#TODO)
 .xblock-wrapper {
 
   .actions-list {
@@ -51,22 +64,39 @@ section.xblock-wrapper {
     margin-bottom: 0;
   }
 
-  .actions-item {
-    @include font-size(13);
+  .action-item {
     display: inline-block;
-    padding: 0 4px;
-    vertical-align: middle;
 
-    .action {
+    .action-button {
+      @include transition(all $tmg-f2 ease-in-out 0s);
+      padding: $baseline/4 $baseline/2;
+      width: auto;
+      height: ($baseline*1.5);
+      border-radius: 3px;
+      color: $gray-l1;
       min-width: ($baseline*.75);
       color: $gray-l2;
 
-      &:hover,
+      &:hover {
+        background-color: $blue;
+        color: $white;
+      }
+
+      // TODO - determine outline.scss's use of this property.
       &.is-set {
-        color: $blue;
         visibility: visible;
       }
 
+      .action-button-text {
+        padding-left: 1px;
+        text-transform: uppercase;
+      }
+
+      &.delete-button:hover {
+        background-color: $gray-l1;
+      }
+
+      // TODO - determine outline.scss's use of this property.
       //reset old drag handle style
       &.drag-handle {
         float: none;
@@ -74,7 +104,6 @@ section.xblock-wrapper {
         background: transparent url(../img/drag-handles.png) right 5px no-repeat;
         text-align: center;
       }
-
     }
   }
 }

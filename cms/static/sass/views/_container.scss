@@ -3,67 +3,101 @@
 // The container view renders xblocks three levels deep: Page Level, Nesting Level, and Element Level.
 // For containers rendered at the element level, the container is rendered in a way that allows the user to navigate to a separate container page for that container making its children populat the nesting and element levels.
 
+
+// Container Page View Styling
 body.view-container {
-
-  .content-primary {
-
+    .content-primary {
+    float: left;
+    clear: both;
+    width: 70%;
   }
-  // xBlock Page Level Styling
-  section.xblock-wrapper-pagelevel {
+
+  .content-supplementary {
+    float: right;
+    padding: $baseline;
+    width: 28%;
+
+    label {
+      @extend %t-title8;
+    }
+  }
+}
+
+// xBlock Page Level Styling
+body.view-container {
+  .xblock-wrapper-pagelevel {
     margin: 0px;
 
-    header.xblock-header {
-      margin-bottom: $baseline;
-      min-height: $baseline*2;
-      line-height: $baseline*2;
+    .xblock-header {
+
+      .xblock-details {
+        font-size: 1.1em;
+      }
     }
 
-    article.xblock-render {
+    .xblock-render {
       background: none;
     }
 
-    ol.xblock-list { }
+    .xblock-list { }
 
-    li.xblock-listitem { }
+    .xblock-listitem { }
   }
 
   // xBlock Nesting Level Styling
-  section.xblock-wrapper-nestinglevel {
+  .xblock-wrapper-nestinglevel {
     margin: $baseline/2;
     border: none;
     box-shadow: none;
 
-    header.xblock-header {
+    &:hover {
+      background-color: $shadow-l3;
+      box-shadow: 0 0 1px $shadow-l1 inset;
+    }
+
+    .xblock-header {
       margin-bottom: $baseline/2;
-      min-height: $baseline;
       border-bottom: none;
       background: none;
       box-shadow: none;
-      line-height: $baseline;
+
+      .xblock-details {
+        font-size: 1em;
+      }
     }
 
-    article.xblock-render { }
+    .xblock-render { }
 
-    ol.xblock-list { }
+    .xblock-list { }
 
-    li.xblock-listitem { }
+    .xblock-listitem { }
   }
 
   // xBlock Element Level Styling
-  section.xblock-wrapper-elementlevel {
+  .xblock-wrapper-elementlevel {
     border-radius: $baseline/4;
     background-color: $white;
     box-shadow: none;
+    margin: 0px $baseline*2;
+
+    &:hover {
+      @include transition(all $tmg-f2 linear 0s);
+      box-shadow: 0px 0px 1px $shadow;
+      border-color: $blue;
+
+    }
 
     // this & styling section duplicated on unit page to enable linking to (initially) read-only container views
     &.xblock-type-container {
 
       .xblock-header {
         margin-bottom: 0px;
-        min-height: $baseline*2;
         border-bottom: 0px;
         border-radius: $baseline/5;
-        line-height: $baseline*2;
+
+        .xblock-details {
+          font-size: .9em;
+        }
       }
 
       .xblock-render {
@@ -71,20 +105,27 @@ body.view-container {
       }
     }
 
-    header.xblock-header {
+    .xblock-header {
       margin-bottom: 0px;
       border-bottom: 1px solid $gray-l4;
       background-color: $gray-l6;
+      font-weight: 300;
+      font-size: .9em;
     }
 
-    article.xblock-render {
+    .xblock-render {
       padding: $baseline;
+
+      //temporary color change
+      color: $gray-l5;
     }
   }
 }
 
+// ====================
 
-
+// Unit Page Styling
+// The remainder of this document is legacy styling carried over from _unit.scss, which _container.scss and _xblock.scss were based on. Until testing has been completed for all container rendering using this legacy styling, it will be left below. As styling is migrated up into the area above, it will be removed from this section. (#TODO)
 
 body.course.container,.view-container {
 
@@ -99,83 +140,25 @@ body.course.container,.view-container {
   //end problem selector reqs
 
 
-  .unit-body.published {
-    .components > li {
-      border: none;
-
-      .rendered-component {
-        padding: 0 $baseline;
-      }
-    }
-  }
-
   .content-primary {
-    float: left;
-    clear: both;
-    width: 70%;
-
-    .unit-name-input {
-      padding: $baseline 2*$baseline;
-
-      label {
-        display: block;
-      }
-
-      input {
-        width: 100%;
-        font-size: 20px;
-      }
-    }
-
-    .breadcrumbs {
-      @include linear-gradient(top, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 70%);
-      @include clearfix;
-      border-bottom: 1px solid #cbd1db;
-      border-radius: 3px 3px 0 0;
-      background-color: #edf1f5;
-      box-shadow: 0 1px 0 rgba(255, 255, 255, .7) inset;
-
-      li {
-        float: left;
-      }
-
-      a,
-      .current-page {
-        display: block;
-        padding: 15px 35px 15px 30px;
-        background: url(../img/breadcrumb-arrow.png) no-repeat right center;
-        font-size: 14px;
-      }
-    }
 
     h2 {
-      margin: 30px 40px 30px 0;
+      margin: 30px 40px 30px 0px;
       color: #646464;
       text-transform: uppercase;
       letter-spacing: 1px;
       font-weight: 300;
       font-size: 19px;
     }
+
     // ====================
 
     // Component List Meta
     .components {
 
       > li {
-        position: relative;
-        z-index: 10;
-        margin: $baseline 2*$baseline;
-
-        .title {
-          margin: 0 0 15px 0;
-          color: $mediumGrey;
-
-          .value {
-          }
-        }
 
         // ====================
-
         // New Components
         &.new-component-item {
           margin: $baseline 0px;
@@ -947,113 +930,11 @@ body.course.container,.view-container {
     }
   }
 }
-// ====================
 
-// Editing Units from Courseware
-//uses similar styling as static-pages.scss
-body.view-container {
-
-  .component {
-    padding-top: 30px;
-
-
-    .wrapper-component-action-header {
-      @include box-sizing(border-box);
-      position: absolute;
-      top: 0;
-      left: 0;
-      padding: $baseline/4 $baseline/2;
-      width: 100%;
-    }
-
-    .component-header {
-      display: inline-block;
-      overflow: hidden;
-      padding: $baseline/2 0px 0px $baseline/4;
-      max-width: 60%;
-      color: $gray-l1;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-weight: 300;
-    }
-
-    .component-actions {
-      display: inline-block;
-      float: right;
-      vertical-align: middle;
-      text-align: center;
-    }
-
-    &.editing {
-      padding-top: 0;
-    }
-
-    .drag-handle {
-      display: none;
-    }
-  }
-}
-
-// ====================
-
-// Component Header Actions
-// uses similar styling as assets.scss, static-pages.scss
-
-body.view-container {
-
-  .component-actions {
-
-    .action-item {
-      display: inline-block;
-      margin: ($baseline/4) 0 ($baseline/4) ($baseline/4);
-
-      .action-button {
-        @include transition(all $tmg-f2 ease-in-out 0s);
-        display: block;
-        padding: 0 $baseline/2;
-        width: auto;
-        height: ($baseline*1.5);
-        border-radius: 3px;
-        color: $gray-l1;
-
-        &:hover {
-          background-color: $blue;
-          color: $gray-l6;
-        }
-
-        .action-button-text {
-          padding-left: 1px;
-          vertical-align: bottom;
-          text-transform: uppercase;
-          line-height: 17px;
-        }
-
-        &.delete-button:hover {
-          background-color: $gray-l1;
-        }
-      }
-
-      [class^="icon-"] {
-        display: inline-block;
-        vertical-align: bottom;
-      }
-    }
-  }
-}
 
 // ====================
 
 // Unit Page Sidebar
-
-.content-supplementary {
-  float: right;
-  padding: $baseline;
-  width: 28%;
-
-  label {
-    @extend %t-title8;
-  }
-}
 
 .unit-settings {
 
@@ -1121,175 +1002,6 @@ body.view-container {
   }
 }
 
-.unit-history {
-  &.collapsed {
-    h4 {
-      border-bottom: none;
-      border-radius: 3px;
-    }
-
-    .window-contents {
-      display: none;
-    }
-  }
-
-  ol {
-    border: 1px solid #ced2db;
-
-    li {
-      display: block;
-      padding: 6px 8px 8px $baseline/2;
-      background: #edf1f5;
-      font-size: 12px;
-
-      &:hover {
-        background: #fffcf1;
-
-        .item-actions {
-          display: block;
-        }
-      }
-
-      &.checked {
-        background: #d1dae3;
-      }
-
-      .item-actions {
-        display: none;
-      }
-
-      input[type="radio"] {
-        margin-right: 7px;
-      }
-    }
-  }
-}
-
-.unit-location {
-
-  // unit id
-  .wrapper-unit-id {
-
-    .unit-id {
-
-      .label {
-        @extend %t-title7;
-        margin-bottom: ($baseline/4);
-        color: $gray-d1;
-      }
-
-      .value {
-        margin-bottom: 0;
-      }
-    }
-  }
-
-  .url {
-    margin-bottom: $baseline/2;
-    width: 100%;
-    box-shadow: none;
-  }
-
-  .draft-tag,
-  .hidden-tag,
-  .private-tag,
-  .has-new-draft-tag {
-    font-size: 8px;
-  }
-
-  .unit-tree-location {
-
-    .section-name {
-      @extend %t-title8;
-    }
-
-
-    .subsection,
-    .courseware-unit {
-      margin: ($baseline/4) 0 0 ($baseline);
-    }
-
-    .courseware-unit .section-item {
-      background-color: transparent;
-    }
-
-    .section-item {
-      @include transition(background $tmg-avg ease-in-out 0);
-      @include box-sizing(border-box);
-      @extend %t-copy-sub2;
-      display: inline-block;
-      overflow: hidden;
-      padding: 6px 8px 8px 16px;
-      width: 100%;
-      background: $gray-l5;
-      color: $gray;
-      vertical-align: top;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-
-      &:hover {
-        background: $blue-l5;
-        color: $blue;
-      }
-
-      &.editing {
-        background-color: $orange-l3;
-      }
-
-      .public-item {
-        color: $black;
-      }
-
-      .private-item {
-        color: $gray-l1;
-      }
-
-      .draft-item {
-        color: $yellow-d1;
-      }
-
-      .public-item:hover,
-      .private-item:hover,
-      .draft-item:hover {
-        color: $blue;
-      }
-
-      .draft-item:after,
-      .public-item:after,
-      .private-item:after {
-        @include font-size(9);
-        margin-left: 3px;
-        text-transform: uppercase;
-        font-weight: 600;
-      }
-
-      .draft-item:after {
-        content: "- draft";
-      }
-
-      .private-item:after {
-        content: "- private";
-      }
-    }
-
-    .new-unit-item {
-      @extend %ui-btn-flat-outline;
-      @extend %t-action4;
-      margin: 0 0 ($baseline/2) ($baseline/4);
-      padding: ($baseline/4) ($baseline/2);
-      width: 90%;
-      border: 1px solid transparent;
-      color: $gray-l2;
-      text-align: left;
-      font-weight: normal;
-
-      &:hover {
-        background-image: none;
-        box-shadow: none;
-      }
-    }
-  }
-}
 
 .edit-state-draft {
   .visibility,
