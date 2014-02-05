@@ -106,6 +106,7 @@
 
 
   // general action list styles (section and subsection)
+  // this section is also used in _xblocks.scss, should be separated or more cleanly inherited (TODO)
   .expand-collapse {
     @include transition(all $tmg-f2 linear 0s);
     display: inline-block;

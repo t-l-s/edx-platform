@@ -1,73 +1,86 @@
-
-
-
 // container - content
 // ==========================
+// The container view renders xblocks three levels deep: Page Level, Nesting Level, and Element Level.
+// For containers rendered at the element level, the container is rendered in a way that allows the user to navigate to a separate container page for that container making its children populat the nesting and element levels.
 
 body.view-container {
 
+  .content-primary {
+
+  }
   // xBlock Page Level Styling
   section.xblock-wrapper-pagelevel {
-    border: none;
+    margin: 0px;
 
-    header.xblock-header-pagelevel {
+    header.xblock-header {
       margin-bottom: $baseline;
-      box-shadow: 0 0 1px $black inset;
+      min-height: $baseline*2;
+      line-height: $baseline*2;
+    }
+
+    article.xblock-render {
       background: none;
     }
 
-    article.xblock-render-pagelevel {
-      background: none;
-    }
+    ol.xblock-list { }
 
-    ol.xblock-list-pagelevel {}
-
-    li.xblock-listitem-pagelevel {}
+    li.xblock-listitem { }
   }
 
   // xBlock Nesting Level Styling
   section.xblock-wrapper-nestinglevel {
+    margin: $baseline/2;
     border: none;
+    box-shadow: none;
 
-
-    header.xblock-header-nestinglevel {
+    header.xblock-header {
       margin-bottom: $baseline/2;
+      min-height: $baseline;
+      border-bottom: none;
       background: none;
+      box-shadow: none;
+      line-height: $baseline;
     }
 
-    article.xblock-render-nestinglevel {}
+    article.xblock-render { }
 
-    ol.xblock-list-nestinglevel {}
+    ol.xblock-list { }
 
-    li.xblock-listitem-nestinglevel {}
+    li.xblock-listitem { }
   }
 
   // xBlock Element Level Styling
   section.xblock-wrapper-elementlevel {
     border-radius: $baseline/4;
     background-color: $white;
+    box-shadow: none;
 
     // this & styling section duplicated on unit page to enable linking to (initially) read-only container views
     &.xblock-type-container {
 
-      .xblock-header-elementlevel {
-        line-height: $baseline*2;
+      .xblock-header {
+        margin-bottom: 0px;
         min-height: $baseline*2;
+        border-bottom: 0px;
+        border-radius: $baseline/5;
+        line-height: $baseline*2;
       }
-      
-      .xblock-render-elementlevel {
+
+      .xblock-render {
         display: none;
       }
     }
 
-    header.xblock-header-elementlevel {}
+    header.xblock-header {
+      margin-bottom: 0px;
+      border-bottom: 1px solid $gray-l4;
+      background-color: $gray-l6;
+    }
 
-    article.xblock-render-elementlevel {
+    article.xblock-render {
       padding: $baseline;
     }
   }
-
-  // basic collapsing behavior
 }
 
 
@@ -97,8 +110,8 @@ body.course.container,.view-container {
   }
 
   .content-primary {
-    clear: both;
     float: left;
+    clear: both;
     width: 70%;
 
     .unit-name-input {
@@ -115,12 +128,12 @@ body.course.container,.view-container {
     }
 
     .breadcrumbs {
-      border-radius: 3px 3px 0 0;
-      border-bottom: 1px solid #cbd1db;
       @include linear-gradient(top, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 70%);
+      @include clearfix;
+      border-bottom: 1px solid #cbd1db;
+      border-radius: 3px 3px 0 0;
       background-color: #edf1f5;
       box-shadow: 0 1px 0 rgba(255, 255, 255, .7) inset;
-      @include clearfix;
 
       li {
         float: left;
@@ -130,18 +143,18 @@ body.course.container,.view-container {
       .current-page {
         display: block;
         padding: 15px 35px 15px 30px;
-        font-size: 14px;
         background: url(../img/breadcrumb-arrow.png) no-repeat right center;
+        font-size: 14px;
       }
     }
 
     h2 {
       margin: 30px 40px 30px 0;
       color: #646464;
-      font-size: 19px;
-      font-weight: 300;
-      letter-spacing: 1px;
       text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 300;
+      font-size: 19px;
     }
     // ====================
 
@@ -166,17 +179,17 @@ body.course.container,.view-container {
         // New Components
         &.new-component-item {
           margin: $baseline 0px;
-          border-top: 1px solid $mediumGrey;
-          box-shadow: 0 2px 1px rgba(182, 182, 182, 0.75) inset;
-          background-color: $lightGrey;
           margin-bottom: 0px;
           padding-bottom: $baseline;
+          border-top: 1px solid $mediumGrey;
+          background-color: $lightGrey;
+          box-shadow: 0 2px 1px rgba(182, 182, 182, 0.75) inset;
 
           .new-component-button {
             display: block;
             padding: $baseline;
-            text-align: center;
             color: #edf1f5;
+            text-align: center;
           }
 
           h5 {
@@ -188,8 +201,8 @@ body.course.container,.view-container {
 
           .rendered-component {
             display: none;
-            background: #fff;
             border-radius: 3px 3px 0 0;
+            background: #fff;
           }
 
           .new-component-type {
@@ -200,42 +213,42 @@ body.course.container,.view-container {
             }
 
             a {
-              border: 1px solid $mediumGrey;
-              width: 100px;
-              height: 100px;
-              color: #fff;
               margin-right: 15px;
               margin-bottom: $baseline;
+              width: 100px;
+              height: 100px;
+              border: 1px solid $mediumGrey;
               border-radius: 8px;
+              box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 1px 0 rgba(255, 255, 255, .4) inset;
+              color: #fff;
+              text-align: center;
               font-size: 15px;
               line-height: 14px;
-              text-align: center;
-              box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 1px 0 rgba(255, 255, 255, .4) inset;
 
               .name {
+                @include box-sizing(border-box);
                 position: absolute;
                 bottom: 5px;
                 left: 0;
-                width: 100%;
                 padding: $baseline/2;
-                @include box-sizing(border-box);
+                width: 100%;
                 color: #fff;
               }
             }
           }
 
           .new-component-templates {
+            @include clearfix;
             display: none;
             margin: $baseline 2*$baseline;
-            border-radius: 3px;
             border: 1px solid $mediumGrey;
+            border-radius: 3px;
             background-color: #fff;
             box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 1px 0 rgba(255, 255, 255, .4) inset;
-            @include clearfix;
 
             .cancel-button {
-              margin: $baseline 0px $baseline/2 $baseline/2;
               @include white-button;
+              margin: $baseline 0px $baseline/2 $baseline/2;
             }
 
             .problem-type-tabs {
@@ -273,35 +286,35 @@ body.course.container,.view-container {
           }
 
           .problem-type-tabs {
-            list-style-type: none;
-            border-radius: 0;
-            width: 100%;
             @include linear-gradient(top, rgba(255, 255, 255, .4), rgba(255, 255, 255, 0));
+            width: 100%;
+            border-radius: 0;
             background-color: $lightBluishGrey;
             box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 -1px 0 rgba(0, 0, 0, 0.2) inset;
+            list-style-type: none;
 
             li:first-child {
               margin-left: $baseline;
             }
 
             li {
-              float:left;
-              display:inline-block;
-              text-align:center;
-              width: auto;
               @include linear-gradient(top, rgba(255, 255, 255, .4), rgba(255, 255, 255, 0));
+              display:inline-block;
+              float:left;
+              width: auto;
               background-color: tint($lightBluishGrey, 10%);
               box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 -1px 0 rgba(0, 0, 0, 0.2) inset;
+              text-align:center;
               opacity: 0.8;
 
               &:hover {
-                opacity: 0.9;
                 background-color: tint($lightBluishGrey, 20%);
+                opacity: 0.9;
               }
 
               &.ui-state-active {
-                border: 0px;
                 @include active;
+                border: 0px;
                 opacity: 1.0;
               }
             }
@@ -309,11 +322,11 @@ body.course.container,.view-container {
             a {
               display: block;
               padding: 15px 25px;
+              color: #3c3c3c;
+              text-align: center;
+              text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
               font-size: 15px;
               line-height: 16px;
-              text-align: center;
-              color: #3c3c3c;
-              text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
             }
           }
 
@@ -321,8 +334,8 @@ body.course.container,.view-container {
 
             a {
               @include transition(none);
-              background: #fff;
               border: 0px;
+              background: #fff;
               color: #3c3c3c;
 
               &:hover {
@@ -362,21 +375,21 @@ body.course.container,.view-container {
 
                 [class^="icon-"] {
                   @include transition(opacity $tmg-f2 linear 0s);
-                  display: inline-block;
                   top: 1px;
+                  display: inline-block;
                   margin-right: 5px;
-                  opacity: 0.5;
                   width: 17;
                   height: 21px;
                   vertical-align: middle;
+                  opacity: 0.5;
                 }
               }
 
               .editor-indicator {
                 @include transition(opacity $tmg-f2 linear 0s);
-                float: right;
                 position: relative;
                 top: 3px;
+                float: right;
                 font-size: 12px;
                 opacity: 0.3;
               }
@@ -402,10 +415,10 @@ body.course.container,.view-container {
             .empty {
 
               a {
-                line-height: 1.4;
-                font-weight: 400;
                 background: #fff;
                 color: #3c3c3c;
+                font-weight: 400;
+                line-height: 1.4;
 
 
                 &:hover {
@@ -428,8 +441,8 @@ body.course.container,.view-container {
 
       .wrapper-alert-error {
           margin-top: ($baseline*1.25);
-          box-shadow: none;
           border-top: 5px solid $red-l1;
+          box-shadow: none;
 
           .copy,
           .title {
@@ -446,23 +459,23 @@ body.course.container,.view-container {
 
     // Component Drag and Drop, Non-Edit Module Rendering, Styling
     .component {
+      @include transition(none);
       border: 1px solid $lightBluishGrey2;
       border-radius: 3px;
       background: #fff;
-      @include transition(none);
 
       &:hover {
         border-color: #6696d7;
 
         .drag-handle {
-          background-color: $blue;
           border-color: $blue;
+          background-color: $blue;
         }
       }
 
       &.editing {
-        border: 1px solid $lightBluishGrey2;
         z-index: auto;
+        border: 1px solid $lightBluishGrey2;
 
         .drag-handle,
         .component-actions {
@@ -475,24 +488,24 @@ body.course.container,.view-container {
       }
 
       .drag-handle {
+        @include transition(none);
         position: absolute;
-        display: block;
         top: -1px;
         right: -16px;
         z-index: 10;
+        display: block;
         width: 15px;
         height: 100%;
-        border-radius: 0 3px 3px 0;
         border: 1px solid $lightBluishGrey2;
+        border-radius: 0 3px 3px 0;
         background: url(../img/white-drag-handles.png) center no-repeat $lightBluishGrey2;
         cursor: move;
-        @include transition(none);
       }
     }
 
     .xmodule_display {
-      padding: 2*$baseline $baseline $baseline;
       overflow-x: auto;
+      padding: 2*$baseline $baseline $baseline;
 
       h1 {
         float: none;
@@ -516,22 +529,22 @@ body.course.container,.view-container {
 
     // Component Editing
     .wrapper-component-editor {
-      z-index: 9999;
       position: relative;
+      z-index: 9999;
       background: $white;
     }
 
     .component-editor {
       @include edit-box;
-      box-shadow: none;
       display: none;
       padding: 0;
       border-radius: 2px 2px 0 0;
+      box-shadow: none;
 
       h3 {
         margin-bottom: $baseline/2;
-        font-size: 18px;
         font-weight: 700;
+        font-size: 18px;
       }
 
       h5 {
@@ -546,15 +559,15 @@ body.course.container,.view-container {
 
       // Module Actions, also used for Static Pages
       .module-actions {
-        box-shadow: inset 0 1px 2px $shadow;
-        border-top: 1px solid $gray-l1;
         padding: ($baseline*0.75) $baseline;
+        border-top: 1px solid $gray-l1;
         background: $gray-l6;
+        box-shadow: inset 0 1px 2px $shadow;
 
         .action {
           display: inline-block;
-          vertical-align: middle;
           margin-right: ($baseline/4);
+          vertical-align: middle;
 
           &:last-child {
             margin-right: 0;
@@ -567,8 +580,8 @@ body.course.container,.view-container {
           @include transition(all .15s);
           display: inline-block;
           padding: ($baseline/5) $baseline;
-          font-weight: 600;
           text-transform: uppercase;
+          font-weight: 600;
         }
 
         .action-secondary {
@@ -577,8 +590,8 @@ body.course.container,.view-container {
           @include transition(all .15s);
           display: inline-block;
           padding: ($baseline/5) $baseline;
-          font-weight: 600;
           text-transform: uppercase;
+          font-weight: 600;
         }
       }
     }
@@ -588,11 +601,11 @@ body.course.container,.view-container {
 // Edit Header (Component Name, Mode-Editor, Mode-Settings)
 .component-edit-header {
   @include box-sizing(border-box);
-  padding: 18px 0 18px $baseline;
   top: 0;
   right: 0;
-  background-color: $blue;
+  padding: 18px 0 18px $baseline;
   border-bottom: 1px solid $blue-d2;
+  background-color: $blue;
   color: $white;
 
   //Component Name
@@ -605,18 +618,18 @@ body.course.container,.view-container {
     em {
       display: inline-block;
       margin-right: ($baseline/4);
-      font-weight: 400;
       color: $white;
+      font-weight: 400;
     }
   }
 
   //Nav-Edit Modes
   .nav-edit-modes {
-    list-style: none;
-    right: 0;
-    top: 0;
     position: absolute;
+    top: 0;
+    right: 0;
     padding: 12px ($baseline*0.75);
+    list-style: none;
 
     .mode {
       display: inline-block;
@@ -632,9 +645,9 @@ body.course.container,.view-container {
 
         &.is-set {
           @include linear-gradient($blue, $blue);
-          color: $blue-d1;
-          box-shadow: inset 0 1px 2px 1px $shadow-l1;
           background-color: $blue-d4;
+          box-shadow: inset 0 1px 2px 1px $shadow-l1;
+          color: $blue-d1;
           cursor: default;
 
           &:hover {
@@ -667,31 +680,31 @@ body.course.container,.view-container {
 
   //settings-list
   .list-input.settings-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
 
     overflow: auto;
+    margin: 0;
+    padding: 0;
     max-height: 400px;
+    list-style: none;
 
     //chrome scrollbar visibility correction
     &::-webkit-scrollbar {
-      -webkit-appearance: none;
       width: 11px;
       height: 11px;
+      -webkit-appearance: none;
     }
 
     &::-webkit-scrollbar-thumb {
-      border-radius: 8px;
       border: 2px solid $gray-l2;
+      border-radius: 8px;
       background-color: rgba(0, 0, 0, .5);
     }
 
     //component-setting-entry
     .field.comp-setting-entry {
-      background-color: $white;
       padding: $baseline;
       border-bottom: 1px solid $gray-l2;
+      background-color: $white;
       opacity: 0.7;
 
       &:last-child {
@@ -715,8 +728,8 @@ body.course.container,.view-container {
       }
 
       &.is-set {
-        opacity: 1.0;
         background-color: $white;
+        opacity: 1.0;
 
         .setting-input {
           color: $blue-l1;
@@ -724,25 +737,25 @@ body.course.container,.view-container {
       }
 
       .wrapper-comp-setting {
+        position: relative;
+        top: 0;
         display: inline-block;
+        margin-bottom:5px;
         min-width: 300px;
         width: 55%;
-        top: 0;
         vertical-align: top;
-        margin-bottom:5px;
-        position: relative;
       }
 
       .setting-label {
         @extend %t-copy-sub1;
         @include transition(color $tmg-f2 ease-in-out 0s);
-        vertical-align: middle;
-        display: inline-block;
         position: relative;
         left: 0;
-        width: 33%;
-        min-width: 100px;
+        display: inline-block;
         margin-right: ($baseline/2);
+        min-width: 100px;
+        width: 33%;
+        vertical-align: middle;
         font-weight: 600;
 
         &.is-focused {
@@ -757,6 +770,7 @@ body.course.container,.view-container {
         padding: ($baseline/2);
         min-width: 100px;
         width: 45%;
+        border: 1px solid $gray-l2;
 
         //&.long {
           //
@@ -774,7 +788,6 @@ body.course.container,.view-container {
         //    color: $gray;
         //  }
         border-radius: 3px;
-        border: 1px solid $gray-l2;
         text-overflow: ellipsis;
       }
 
@@ -802,9 +815,9 @@ body.course.container,.view-container {
         //box-shadow: 0 1px 2px $shadow-l1 inset;
 
         &:focus {
-          box-shadow: 0 0 1px $shadow;
           @include transition(opacity $tmg-f2 ease-in-out 0s);
           background-color: $yellow;
+          box-shadow: 0 0 1px $shadow;
         }
 
         &:active {
@@ -814,23 +827,23 @@ body.course.container,.view-container {
 
       .action.setting-clear {
         @include font-size(11);
-        color: $gray;
+        margin: 0 $baseline/2;
+        padding: 5px;
         width: 25px;
         height: 25px;
-        vertical-align: middle;
-        padding: 5px;
-        border-radius: 50%;
-        margin: 0 $baseline/2;
-        box-shadow: none;
-        text-shadow: none;
         border: 1px solid $gray-l1;
+        border-radius: 50%;
         background-color: $gray-l4;
+        box-shadow: none;
+        color: $gray;
+        vertical-align: middle;
+        text-shadow: none;
 
         &:hover {
-          box-shadow: 0 1px 1px $shadow;
           @include transition(opacity $tmg-f2 ease-in-out 0s);
-          background-color: $blue-s3;
           border: 1px solid $blue-s3;
+          background-color: $blue-s3;
+          box-shadow: 0 1px 1px $shadow;
           color: $white;
         }
 
@@ -842,10 +855,10 @@ body.course.container,.view-container {
       .setting-help {
         @include font-size(12);
         display: inline-block;
-        font-color: $gray-l6;
         min-width: ($baseline*10);
         width: 35%;
         vertical-align: top;
+        font-color: $gray-l6;
       }
 
 
@@ -859,8 +872,8 @@ body.course.container,.view-container {
 
         // label
         .setting-label {
-          vertical-align: top;
           margin-top: ($baseline/2);
+          vertical-align: top;
         }
 
         // inputs and labels
@@ -879,8 +892,8 @@ body.course.container,.view-container {
 
             // inputs
             .input {
-              width: 80%;
               margin-right: ($baseline/2);
+              width: 80%;
               vertical-align: middle;
             }
           }
@@ -892,16 +905,16 @@ body.course.container,.view-container {
         }
 
         .setting-clear {
-          vertical-align: top;
           margin-top: ($baseline/4);
+          vertical-align: top;
         }
 
         .create-setting {
           @extend %ui-btn-flat-outline;
           @extend %t-action3;
           display: block;
-          width: 100%;
           padding: ($baseline/2);
+          width: 100%;
           font-weight: 600;
 
           *[class^="icon-"] {
@@ -947,10 +960,10 @@ body.view-container {
     .wrapper-component-action-header {
       @include box-sizing(border-box);
       position: absolute;
-      width: 100%;
-      padding: $baseline/4 $baseline/2;
       top: 0;
       left: 0;
+      padding: $baseline/4 $baseline/2;
+      width: 100%;
     }
 
     .component-header {
@@ -1049,8 +1062,8 @@ body.view-container {
   }
 
   .unit-actions {
-    border-bottom: none;
     padding-bottom: 0;
+    border-bottom: none;
   }
 
   .published-alert {
@@ -1102,9 +1115,9 @@ body.view-container {
   .preview-button,
   .publish-button,
   .view-button {
-    font-size: 11px;
     margin-top: $baseline/2;
     padding: 6px 15px 8px;
+    font-size: 11px;
   }
 }
 
@@ -1172,9 +1185,9 @@ body.view-container {
   }
 
   .url {
-    box-shadow: none;
-    width: 100%;
     margin-bottom: $baseline/2;
+    width: 100%;
+    box-shadow: none;
   }
 
   .draft-tag,
@@ -1205,14 +1218,14 @@ body.view-container {
       @include box-sizing(border-box);
       @extend %t-copy-sub2;
       display: inline-block;
+      overflow: hidden;
+      padding: 6px 8px 8px 16px;
       width: 100%;
       background: $gray-l5;
-      padding: 6px 8px 8px 16px;
+      color: $gray;
       vertical-align: top;
       text-overflow: ellipsis;
       white-space: nowrap;
-      overflow: hidden;
-      color: $gray;
 
       &:hover {
         background: $blue-l5;
@@ -1246,8 +1259,8 @@ body.view-container {
       .private-item:after {
         @include font-size(9);
         margin-left: 3px;
-        font-weight: 600;
         text-transform: uppercase;
+        font-weight: 600;
       }
 
       .draft-item:after {
@@ -1262,17 +1275,17 @@ body.view-container {
     .new-unit-item {
       @extend %ui-btn-flat-outline;
       @extend %t-action4;
-      width: 90%;
       margin: 0 0 ($baseline/2) ($baseline/4);
-      border: 1px solid transparent;
       padding: ($baseline/4) ($baseline/2);
-      font-weight: normal;
+      width: 90%;
+      border: 1px solid transparent;
       color: $gray-l2;
       text-align: left;
+      font-weight: normal;
 
       &:hover {
-        box-shadow: none;
         background-image: none;
+        box-shadow: none;
       }
     }
   }
@@ -1323,9 +1336,9 @@ body.view-container {
 
 // Latex Compiler
 .launch-latex-compiler {
-  background-color: $white;
   padding: $baseline/2 0 $baseline/2 $baseline;
   border-bottom: 1px solid $gray-l2;
+  background-color: $white;
   opacity: 0.8;
 
 

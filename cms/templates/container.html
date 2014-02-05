@@ -56,7 +56,7 @@ from django.utils.translation import ugettext as _
                 <a href="#" class="navigation-link navigation-parent">${_("Unit Page Super Long Title Name Goes Here Yeah Whats Up Parent")}</a>
             </small>
             <span class="sr">&gt; </span>
-            <span class="container-page-name">${_("Container")}</span>
+            <span class="container-page-name">${_("Container Name")}</span>
         </h1>
 
         <nav class="nav-actions">
@@ -75,53 +75,142 @@ from django.utils.translation import ugettext as _
         <section class="content-area">
             <article class="content-primary">
                 <section class="xblock-wrapper xblock-wrapper-pagelevel">
-                    <header class="xblock-header xblock-header-pagelevel">Page-Level Header</header>
-                    <article class="xblock-render xblock-render-pagelevel">
-                        <ol class="xblock-list xblock-nestinglevel-list">
-                            <li class="xblock-listitem xblock-listitem-nestinglevel">
+                    <header class="xblock-header">
+                        <div class="header-details">
+                            Container Name
+                        </div>
+                        <div class="header-actions">
+                            <ul class="actions-list">
+                                <li class="sr action-item">No Actions</li>
+                            <ul>
+                        </div>
+                    </header>
+                    <article class="xblock-render">
+                        <ol class="xblock-list">
+                            <li class="xblock-listitem">
                                 <section class="xblock-wrapper xblock-wrapper-nestinglevel">
-                                    <header class="xblock-header xblock-header-nestinglevel">Condition 1, for example. </header>
-                                    <article class="xblock-render xblock-render-nestinglevel">
-                                        <ol class="xblock-list xblock-elementlevel-list">
-                                            <li class="xblock-listitem xblock-listitem-elementlevel"</li>
+                                    <header class="xblock-header">
+                                        <div class="header-details">
+                                            <a href="#" data-tooltip="Expand or Collapse" class="action expand-collapse expand">
+                                                <i class="icon-caret-down ui-toggle-expansion"></i>
+                                                <span class="sr">Expand or Collapse</span>
+                                            </a>
+                                            <span>Condition 1, for example.</span>
+                                        </div>
+                                        <div class="header-actions">
+                                            <ul class="actions-list">
+                                                <li class="sr action-item">No Actions</li>
+                                            <ul>
+                                        </div>
+                                    </header>
+                                    <article class="xblock-render">
+                                        <ol class="xblock-list">
+                                            <li class="xblock-listitem"</li>
                                                 <section class="xblock-wrapper xblock-wrapper-elementlevel">
-                                                    <header class="xblock-header xblock-header-elementlevel">Element Level Header</header>
-                                                    <article class="xblock-render xblock-render-elementlevel">Shows Element - Example Video could be here. </article>
+                                                    <header class="xblock-header">
+                                                        <div class="header-details">
+                                                            Video
+                                                        </div>
+                                                        <div class="header-actions">
+                                                            <ul class="actions-list">
+                                                                <li class="sr action-item">No Actions</li>
+                                                            <ul>
+                                                        </div>
+                                                    </header>
+                                                    <article class="xblock-render">Shows Element - Example Video could be here. </article>
                                                 </section>
-                                            <li class="xblock-listitem xblock-listitem-elementlevel"</li>
+                                            <li class="xblock-listitem"</li>
                                                 <section class="xblock-wrapper xblock-type-container xblock-wrapper-elementlevel">
-                                                    <header class="xblock-header xblock-header-elementlevel">Element Level Header</header>
-                                                    <article class="xblock-render xblock-render-elementlevel">Shows Element - Example Text could be here.</article>
+                                                    <header class="xblock-header">
+                                                        <div class="header-details">
+                                                            HTML
+                                                        </div>
+                                                        <div class="header-actions">
+                                                            <ul class="actions-list">
+                                                                <li class="sr action-item">No Actions</li>
+                                                            <ul>
+                                                        </div>
+                                                    </header>
+                                                    <article class="xblock-render">Shows Element - Example Text could be here.</article>
                                                 </section>
-                                            <li class="xblock-listitem xblock-listitem-elementlevel"</li>
+                                            <li class="xblock-listitem"</li>
                                                 <section class="xblock-wrapper xblock-wrapper-elementlevel">
-                                                    <header class="xblock-header xblock-header-elementlevel">Element Level Header</header>
-                                                    <article class="xblock-render xblock-render-elementlevel">Shows Element - Example HTML could be here.</article>
+                                                    <header class="xblock-header">
+                                                        <div class="header-details">
+                                                            Element Level Header
+                                                        </div>
+                                                        <div class="header-actions">
+                                                            <ul class="actions-list">
+                                                                <li class="sr action-item">No Actions</li>
+                                                            <ul>
+                                                        </div>
+                                                    </header>
+                                                    <article class="xblock-render">Shows Element - Example HTML could be here.</article>
                                                 </section>
                                             </li>
                                         </ol>
                                     </article>
                                 </section>
                             </li>
-                            <li class="xblock-listitem xblock-listitem-nestinglevel">
+                            <li class="xblock-listitem xblock-listitem">
                                 <section class="xblock-wrapper xblock-wrapper-nestinglevel">
-                                    <header class="xblock-header xblock-header-nestinglevel">Condition 2, for example.</header>
-                                    <article class="xblock-render xblock-render-nestinglevel">
-                                        <ol class="xblock-list xblock-elementlevel-list">
-                                            <li class="xblock-listitem xblock-listitem-elementlevel"</li>
+                                    <header class="xblock-header">
+                                        <div class="header-details">
+                                            <a href="#" data-tooltip="Expand or Collapse" class="action expand-collapse expand">
+                                                <i class="icon-caret-down ui-toggle-expansion"></i>
+                                                <span class="sr">Expand or Collapse</span>
+                                            </a>
+                                            <span>Condition 2, for example.</span>
+                                        </div>
+                                        <div class="header-actions">
+                                            <ul class="actions-list">
+                                                <li class="sr action-item">No Actions</li>
+                                            <ul>
+                                        </div>
+                                    </header>
+                                    <article class="xblock-render">
+                                        <ol class="xblock-list">
+                                            <li class="xblock-listitem"</li>
                                                 <section class="xblock-wrapper xblock-wrapper-elementlevel">
-                                                    <header class="xblock-header xblock-header-elementlevel">Element Level Header</header>
-                                                    <article class="xblock-render xblock-render-elementlevel">Shows Element - Example Video could be here. </article>
+                                                    <header class="xblock-header">
+                                                        <div class="header-details">
+                                                            Element Level Header
+                                                        </div>
+                                                        <div class="header-actions">
+                                                            <ul class="actions-list">
+                                                                <li class="sr action-item">No Actions</li>
+                                                            <ul>
+                                                        </div>
+                                                    </header>
+                                                    <article class="xblock-render">Shows Element - Example Video could be here. </article>
                                                 </section>
-                                            <li class="xblock-listitem xblock-listitem-elementlevel"</li>
+                                            <li class="xblock-listitem"</li>
                                                 <section class="xblock-wrapper xblock-wrapper-elementlevel">
-                                                    <header class="xblock-header xblock-header-elementlevel">Element Level Header</header>
-                                                    <article class="xblock-render xblock-render-elementlevel">Shows Element - Example Text could be here.</article>
+                                                    <header class="xblock-header">
+                                                        <div class="header-details">
+                                                            Element Level Header
+                                                        </div>
+                                                        <div class="header-actions">
+                                                            <ul class="actions-list">
+                                                                <li class="sr action-item">No Actions</li>
+                                                            <ul>
+                                                        </div>
+                                                    </header>
+                                                    <article class="xblock-render">Shows Element - Example Text could be here.</article>
                                                 </section>
-                                            <li class="xblock-listitem xblock-listitem-elementlevel"</li>
+                                            <li class="xblock-listitem"</li>
                                                 <section class="xblock-wrapper xblock-wrapper-elementlevel">
-                                                    <header class="xblock-header xblock-header-elementlevel">Element Level Header</header>
-                                                    <article class="xblock-render xblock-render-elementlevel">Shows Element - Example HTML could be here.</article>
+                                                    <header class="xblock-header">
+                                                        <div class="header-details">
+                                                            Element Level Header
+                                                        </div>
+                                                        <div class="header-actions">
+                                                            <ul class="actions-list">
+                                                                <li class="sr action-item">No Actions</li>
+                                                            <ul>
+                                                        </div>
+                                                    </header>
+                                                    <article class="xblock-render">Shows Element - Example HTML could be here.</article>
                                                 </section>
                                             </li>
                                         </ol>
@@ -136,7 +225,7 @@ from django.utils.translation import ugettext as _
                 <div class="bit">
                     <h3 class="title-3">${_("What can I do on this page?")}</h3>
                     <ul class="list-details">
-                        <li class="item-detail">${_("Not much since this is read-only! TODO: need some real doc here...")}</li>
+                        <li class="item-detail">${_("Primary description sidebar element for containers, explaining how they are used in Studio and what their course impact is. ")}</li>
                     </ul>
                 </div>
             </aside>
