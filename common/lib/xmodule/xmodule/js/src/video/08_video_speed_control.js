@@ -119,13 +119,13 @@ function () {
 
     // Get previous element in array or cyles back to the last if it is the
     // first.
-    function _previousIndex(array, index) {
-        return index === 0 ? array.length - 1 : index - 1;
+    function _previousSpeedLink(speedLinks, index) {
+        return speedLinks.eq(index < 1 ? speedLinks.length - 1 : index - 1);
     }
 
     // Get next element in array or cyles back to the first if it is the last.
-    function _nextIndex(array, index) {
-        return index === array.length - 1 ? 0 : index + 1;
+    function _nextSpeedLink(speedLinks, index) {
+        return speedLinks.eq(index >= speedLinks.length - 1 ? 0 : index + 1);
     }
 
     /**
@@ -201,33 +201,50 @@ function () {
                 .find('a.speed_link');
 
             speedLinks.each(function(index, speedLink) {
-                var previousIndex = _previousIndex(speedLinks, index),
-                    nextIndex = _nextIndex(speedLinks, index);
+                var previousSpeedLink = _previousSpeedLink(speedLinks, index),
+                    nextSpeedLink = _nextSpeedLink(speedLinks, index),
+                    speedButtonAnchor = state.videoSpeedControl.el
+                                                               .children('a');
 
                 $(speedLink).on('keydown', function (event) {
-                    var keyCode = event.keyCode;
                     event.preventDefault();
                     event.stopImmediatePropagation();
-                    // Scroll up menu, wrapping at the top. Keep menu open.
-                    if (keyCode === KEY.UP ||
-                        (keyCode === KEY.TAB && !event.shiftKey)) {
-                        $(speedLinks.eq(previousIndex)).focus();
-                    }
-                    // Scroll down  menu, wrapping at the bottom. Keep menu
-                    // open.
-                    else if (keyCode === KEY.DOWN ||
-                             keyCode === KEY.TAB && event.shiftKey) {
-                        $(speedLinks.eq(nextIndex)).focus();
-                    }
-                    // Change speed and close menu.
-                    else if (keyCode === KEY.ENTER) {
-                        state.videoSpeedControl.el.removeClass('open');
-                        state.videoSpeedControl.changeVideoSpeed(event);
-                    }
-                    // Close menu.
-                    else if (keyCode === KEY.ESCAPE) {
-                        state.videoSpeedControl.el.removeClass('open');
-                        state.videoSpeedControl.el.children('a').focus();
+                    switch (event.keyCode) {
+                        // Scroll up menu, wrapping at the top. Keep menu open.
+                        case KEY.UP:
+                            $(previousSpeedLink).focus();
+                            break;
+                        // Scroll down  menu, wrapping at the bottom. Keep menu
+                        // open.
+                        case KEY.DOWN:
+                            $(nextSpeedLink).focus();
+                            break;
+                        // Close menu.
+                        case KEY.TAB:
+                            state.videoSpeedControl.el.removeClass('open');
+                            // Set focus to previous menu button in menu bar
+                            // (Play/Pause button)
+                            if (event.shiftKey) {
+                                state.videoControl.playPauseEl .focus();
+                            }
+                            // Set focus to next menu button in menu bar
+                            // (Volume button)
+                            else {
+                                state.videoVolumeControl.buttonEl.focus();
+                            }
+                            break;
+                        // Close menu, give focus to speed control and change
+                        // speed.
+                        case KEY.ENTER:
+                            state.videoSpeedControl.el.removeClass('open');
+                            speedButtonAnchor.focus();
+                            state.videoSpeedControl.changeVideoSpeed(event);
+                            break;
+                        // Close menu and give focus to speed control.
+                        case KEY.ESCAPE:
+                            state.videoSpeedControl.el.removeClass('open');
+                            speedButtonAnchor.focus();
+                            break;
                     }
                 });
             });

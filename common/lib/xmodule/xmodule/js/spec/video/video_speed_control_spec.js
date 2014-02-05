@@ -80,6 +80,16 @@
                         return $.Event('keydown', {keyCode: key});
                     },
 
+                    tabBackPressEvent = function() {
+                        return $.Event('keydown',
+                                       {keyCode: KEY.TAB, shiftKey: true});
+                    },
+
+                    tabForwardPressEvent = function() {
+                        return $.Event('keydown',
+                                       {keyCode: KEY.TAB, shiftKey: false});
+                    },
+
                     // Get previous element in array or cyles back to the last
                     // if it is the first.
                     previousSpeed = function(index) {
@@ -180,6 +190,30 @@
                     // Menu is closed, focus has been returned to speed
                     // control and video speed has been changed to 0.50x.
                     expect(speedControl.focus).toHaveBeenCalled();
+                });
+
+                it('TAB + SHIFT keydown on speed entry closes menu and gives ' +
+                   'focus to Play/Pause control', function () {
+                    // First open menu. Focus is on last speed entry.
+                    speedControl.trigger(keyPressEvent(KEY.UP));
+                    speedEntries.last().trigger(tabBackPressEvent());
+
+                    // Menu is closed and focus has been given to Play/Pause
+                    // control.
+                    expect(state.videoControl.playPauseEl.focus)
+                        .toHaveBeenCalled();
+                });
+
+                it('TAB keydown on speed entry closes menu and gives focus ' +
+                   'to Volume control', function () {
+                    // First open menu. Focus is on last speed entry.
+                    speedControl.trigger(keyPressEvent(KEY.UP));
+                    speedEntries.last().trigger(tabForwardPressEvent());
+
+                    // Menu is closed and focus has been given to Volume
+                    // control.
+                    expect(state.videoVolumeControl.buttonEl.focus)
+                        .toHaveBeenCalled();
                 });
             });
         });
