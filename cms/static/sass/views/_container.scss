@@ -1,44 +1,4 @@
-// studio - views - container
-// ==========================
 
-
-// container - mast
-// ==========================
-
-
-
-// xblock - default styling
-// ==========================
-section.xblock-wrapper {
-  border: 1px solid $gray-l4;
-
-  &.collapsed {
-
-      header.xblock-header {
-        min-height: $baseline*2;
-        line-height: $baseline*2;
-        border-radius: $baseline/5;
-      }
-      article.xblock-render {
-        display: none;
-      }
-    }
-
-  header.xblock-header {
-    background-color: $gray-l6;
-    border-bottom: $gray-l4;
-    min-height: $baseline;
-    padding: $baseline/2;
-  }
-
-  article.xblock-render {}
-
-  ol.xblock-list {}
-
-  li.xblock-listitem {
-    margin-bottom: $baseline;
-  }
-}
 
 
 // container - content
@@ -86,6 +46,19 @@ body.view-container {
   section.xblock-wrapper-elementlevel {
     border-radius: $baseline/4;
     background-color: $white;
+
+    // this & styling section duplicated on unit page to enable linking to (initially) read-only container views
+    &.xblock-type-container {
+
+      .xblock-header-elementlevel {
+        line-height: $baseline*2;
+        min-height: $baseline*2;
+      }
+      
+      .xblock-render-elementlevel {
+        display: none;
+      }
+    }
 
     header.xblock-header-elementlevel {}
 
@@ -1060,7 +1033,9 @@ body.view-container {
 // Unit Page Sidebar
 
 .content-supplementary {
+  float: right;
   padding: $baseline;
+  width: 28%;
 
   label {
     @extend %t-title8;

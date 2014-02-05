@@ -1,0 +1,22 @@
+// xblocks - default styling
+// ==========================
+// The following is the default styling structure and base for xblocks, as an early draft, the element tags are left here in the styling but the production version will only have class labeling. 
+section.xblock-wrapper {
+  border: 1px solid $gray-l4;
+
+  header.xblock-header {
+    padding: $baseline/2;
+    min-height: $baseline;
+    border-bottom: $gray-l4;
+    border-radius: $baseline/5;
+    background-color: $gray-l6;
+  }
+
+  article.xblock-render {}
+
+  ol.xblock-list {}
+
+  li.xblock-listitem {
+    margin-bottom: $baseline;
+  }
+}

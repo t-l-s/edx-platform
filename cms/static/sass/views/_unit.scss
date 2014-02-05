@@ -420,6 +420,19 @@ body.course.unit,.view-unit {
       }
     }
 
+    // Special xBlock and xModule styling
+    .xblock-type-container {
+
+      .xblock-header-elementlevel {
+        line-height: $baseline*2;
+        min-height: $baseline*2;
+      }
+      
+      .xblock-render-elementlevel {
+        display: none;
+      }
+    }
+
     .xmodule_display {
       padding: 2*$baseline $baseline $baseline;
       overflow-x: auto;
