@@ -13,6 +13,7 @@ To view course data:
 #. Click **Instructor** then **Try New Beta Dashboard**.
 
 #. Click **Course Info** if necessary. 
-   The page that displays shows the number of students who are currently enrolled, which includes all of the staff members you have defined for the course. It also lists identifying information for the course, indicates whether it has started or ended, and the the defined cutoff for a passing grade.
 
-You also use the Instructor Dashboard to set up the staff for your course, enroll and get information about students, and initiate and review grading.
+   The Basic Course Information section of the page that displays lists identifying information for the course, indicates whether it has started or ended, and shows the defined grade cutoff for passing or failing.
+
+You also use the Instructor Dashboard to set up the staff for your course, enroll students and access student data, and initiate, review, and adjust grades.
