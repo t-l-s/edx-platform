@@ -324,12 +324,17 @@ p, ul, ol, dl {
       }
     }
 
-    // layout with actions
+    // layout with navigation
     &.has-navigation {
+
+      .navigation .navigation-link:first-child:before {
+        content: "";
+        margin: 0px;
+      }
 
       .navigation-link {
         display: inline-block;
-        overflow: hidden; 
+        overflow: hidden;
         max-width: 150px;
         color: inherit;
         text-overflow: ellipsis;
@@ -338,19 +343,27 @@ p, ul, ol, dl {
         &:hover {
           color: $blue-s1;
 
-          &:after {
+          &:before {
           	color: $gray-l2;
+          }
+        }
+
+        &.navigation-current {
+          color: $gray;
+
+          &:before {
+            color: $gray;
           }
         }
       }
 
-      .navigation-link:after {
-          content: "/";
-          margin: 0px $baseline/4;
+      .navigation-link:before {
+          content: " / ";
+          margin: $baseline/4 $baseline/4;
           color: inherit;
 
           &:hover {
-          	color: inherit;
+            color: inherit;
           }
         }
 

@@ -1,12 +1,18 @@
 // container - content
 // ==========================
 // The container view renders xblocks three levels deep: Page Level, Nesting Level, and Element Level.
-// For containers rendered at the element level, the container is rendered in a way that allows the user to navigate to a separate container page for that container making its children populat the nesting and element levels.
 
+// For containers rendered at the element level, the container is rendered in a way that allows the user to navigate to a separate container page for that container making its children populat the nesting and element levels.
 
 // Container Page View Styling
 body.view-container {
-    .content-primary {
+
+  .mast {
+    border-bottom: none;
+    padding-bottom: 0px;
+  }
+
+  .content-primary {
     float: left;
     clear: both;
     width: 70%;
@@ -29,6 +35,7 @@ body.view-container {
     margin: 0px;
 
     .xblock-header {
+      display: none;
 
       .xblock-details {
         font-size: 1.1em;
@@ -52,10 +59,11 @@ body.view-container {
 
     &:hover {
       background-color: $shadow-l3;
-      box-shadow: 0 0 1px $shadow-l1 inset;
+      box-shadow: 0 0 1px $shadow-d2 inset;
     }
 
     .xblock-header {
+      display: block;
       margin-bottom: $baseline/2;
       border-bottom: none;
       background: none;
@@ -75,15 +83,15 @@ body.view-container {
 
   // xBlock Element Level Styling
   .xblock-wrapper-elementlevel {
+    margin: 0px $baseline*2;
     border-radius: $baseline/4;
     background-color: $white;
     box-shadow: none;
-    margin: 0px $baseline*2;
 
     &:hover {
       @include transition(all $tmg-f2 linear 0s);
-      box-shadow: 0px 0px 1px $shadow;
       border-color: $blue;
+      box-shadow: 0px 0px 1px $shadow;
 
     }
 
@@ -108,7 +116,7 @@ body.view-container {
     .xblock-header {
       margin-bottom: 0px;
       border-bottom: 1px solid $gray-l4;
-      background-color: $gray-l6;
+      background-color: $blue-l5;
       font-weight: 300;
       font-size: .9em;
     }
@@ -163,8 +171,8 @@ body.course.container,.view-container {
         &.new-component-item {
           margin: $baseline 0px;
           margin-bottom: 0px;
-          padding-bottom: $baseline;
           border-top: 1px solid $mediumGrey;
+          padding-bottom: $baseline;
           background-color: $lightGrey;
           box-shadow: 0 2px 1px rgba(182, 182, 182, 0.75) inset;
 
@@ -198,10 +206,10 @@ body.course.container,.view-container {
             a {
               margin-right: 15px;
               margin-bottom: $baseline;
-              width: 100px;
-              height: 100px;
               border: 1px solid $mediumGrey;
               border-radius: 8px;
+              width: 100px;
+              height: 100px;
               box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 1px 0 rgba(255, 255, 255, .4) inset;
               color: #fff;
               text-align: center;
@@ -270,8 +278,8 @@ body.course.container,.view-container {
 
           .problem-type-tabs {
             @include linear-gradient(top, rgba(255, 255, 255, .4), rgba(255, 255, 255, 0));
-            width: 100%;
             border-radius: 0;
+            width: 100%;
             background-color: $lightBluishGrey;
             box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 -1px 0 rgba(0, 0, 0, 0.2) inset;
             list-style-type: none;
@@ -349,8 +357,8 @@ body.course.container,.view-container {
             a {
               @include clearfix();
               display: block;
-              padding: 7px $baseline;
               border-bottom: none;
+              padding: 7px $baseline;
               font-weight: 500;
 
               .name {
@@ -477,10 +485,10 @@ body.course.container,.view-container {
         right: -16px;
         z-index: 10;
         display: block;
-        width: 15px;
-        height: 100%;
         border: 1px solid $lightBluishGrey2;
         border-radius: 0 3px 3px 0;
+        width: 15px;
+        height: 100%;
         background: url(../img/white-drag-handles.png) center no-repeat $lightBluishGrey2;
         cursor: move;
       }
@@ -520,8 +528,8 @@ body.course.container,.view-container {
     .component-editor {
       @include edit-box;
       display: none;
-      padding: 0;
       border-radius: 2px 2px 0 0;
+      padding: 0;
       box-shadow: none;
 
       h3 {
@@ -542,8 +550,8 @@ body.course.container,.view-container {
 
       // Module Actions, also used for Static Pages
       .module-actions {
-        padding: ($baseline*0.75) $baseline;
         border-top: 1px solid $gray-l1;
+        padding: ($baseline*0.75) $baseline;
         background: $gray-l6;
         box-shadow: inset 0 1px 2px $shadow;
 
@@ -586,8 +594,8 @@ body.course.container,.view-container {
   @include box-sizing(border-box);
   top: 0;
   right: 0;
-  padding: 18px 0 18px $baseline;
   border-bottom: 1px solid $blue-d2;
+  padding: 18px 0 18px $baseline;
   background-color: $blue;
   color: $white;
 
@@ -685,8 +693,8 @@ body.course.container,.view-container {
 
     //component-setting-entry
     .field.comp-setting-entry {
-      padding: $baseline;
       border-bottom: 1px solid $gray-l2;
+      padding: $baseline;
       background-color: $white;
       opacity: 0.7;
 
@@ -750,9 +758,6 @@ body.course.container,.view-container {
         @include placeholder($gray-l4);
         @include font-size(16);
         @include size(100%,100%);
-        padding: ($baseline/2);
-        min-width: 100px;
-        width: 45%;
         border: 1px solid $gray-l2;
 
         //&.long {
@@ -771,6 +776,9 @@ body.course.container,.view-container {
         //    color: $gray;
         //  }
         border-radius: 3px;
+        padding: ($baseline/2);
+        min-width: 100px;
+        width: 45%;
         text-overflow: ellipsis;
       }
 
@@ -811,11 +819,11 @@ body.course.container,.view-container {
       .action.setting-clear {
         @include font-size(11);
         margin: 0 $baseline/2;
+        border: 1px solid $gray-l1;
+        border-radius: 50%;
         padding: 5px;
         width: 25px;
         height: 25px;
-        border: 1px solid $gray-l1;
-        border-radius: 50%;
         background-color: $gray-l4;
         box-shadow: none;
         color: $gray;
@@ -943,15 +951,15 @@ body.course.container,.view-container {
   }
 
   .unit-actions {
-    padding-bottom: 0;
     border-bottom: none;
+    padding-bottom: 0;
   }
 
   .published-alert {
     display: none;
-    padding: $baseline/2;
     border: 1px solid #edbd3c;
     border-radius: 3px;
+    padding: $baseline/2;
     background: #fbf6e1;
     font-size: 14px;
     line-height: 1.4;
@@ -1048,8 +1056,8 @@ body.course.container,.view-container {
 
 // Latex Compiler
 .launch-latex-compiler {
-  padding: $baseline/2 0 $baseline/2 $baseline;
   border-bottom: 1px solid $gray-l2;
+  padding: $baseline/2 0 $baseline/2 $baseline;
   background-color: $white;
   opacity: 0.8;
 

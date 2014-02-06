@@ -49,21 +49,20 @@ from django.utils.translation import ugettext as _
 
 
 <div class="wrapper-mast wrapper">
-    <header class="mast has-actions has-navigation">
+    <header class="mast has-navigation">
         <h1 class="page-header">
             <small class="navigation navigation-parents">
                 <a href="#" class="navigation-link navigation-parent-previous">${_("Parent of Unit Page")}</a>
                 <a href="#" class="navigation-link navigation-parent">${_("Unit Page Super Long Title Name Goes Here Yeah Whats Up Parent")}</a>
+                <a href="#" class="navigation-link navigation-current">${_("Container Name")}</a>
             </small>
-            <span class="sr">&gt; </span>
-            <span class="container-page-name">${_("Container Name")}</span>
         </h1>
 
         <nav class="nav-actions">
             <h3 class="sr">${_("Page Actions")}</h3>
             <ul>
-                <li class="nav-item">
-                    <a href="#" class="button upload-button new-button"><i class="icon-plus"></i> ${_("Upload New File")}</a>
+                <li class="sr nav-item">
+                    ${_("No Actions")}
                 </li>
             </ul>
         </nav>
@@ -318,9 +317,9 @@ from django.utils.translation import ugettext as _
             </article>
             <aside class="content-supplementary" role="complimentary">
                 <div class="bit">
-                    <h3 class="title-3">${_("What can I do on this page?")}</h3>
+                    <h3 class="title-3">${_("Container Reference Page")}</h3>
                     <ul class="list-details">
-                        <li class="item-detail">${_("Primary description sidebar element for containers, explaining how they are used in Studio and what their course impact is. ")}</li>
+                        <li class="item-detail">${_("This is a reference  for the container page, mean to show visual states and general FED hierarchy for the both the HTML template and the SASS styling.")}</li>
                     </ul>
                 </div>
             </aside>
