@@ -169,13 +169,14 @@ def _accessible_courses_list(request):
         """
         Get courses to which this user has access
         """
+        if GlobalStaff().has_user(request.user):
+            return course.location.course != 'templates'
+
         return (has_course_access(request.user, course.location)
                 # pylint: disable=fixme
                 # TODO remove this condition when templates purged from db
                 and course.location.course != 'templates'
-                and course.location.org != ''
-                and course.location.course != ''
-                and course.location.name != '')
+                )
     courses = filter(course_filter, courses)
     return courses
 
@@ -191,21 +192,26 @@ def _accessible_courses_list_from_groups(request):
     user_staff_group_names = request.user.groups.filter(
         Q(name__startswith='instructor_') | Q(name__startswith='staff_')).values_list('name', flat=True)
 
-    # We can only get course_ids from role names with the new format (instructor_org/number/run or
+    # we can only get course_ids from role names with the new format (instructor_org/number/run or
     # instructor_org.number.run but not instructor_number) and only for those course_ids which do
     # not have '.' in the number or run (instructor_org.number.run and not instructor_org.num.ber.run).
     # So if for any role name either of these conditions fail do not proceed."
     for user_staff_group_name in user_staff_group_names:
-        # to avoid duplication try to convert all course_id's to new format e.g. "edX.course.run"
-        course_id = re.sub(r'^(instructor_|staff_)', '', user_staff_group_name).replace('/', '.')
-        if len(course_id.split('.')) == 3:
-            course_ids.add(course_id)
-        else:
-            return False, []
+        # to avoid duplication try to convert all course_id's to format with slashes e.g. "edX/course/run"
+        course_id = re.sub(r'^(instructor_|staff_)', '', user_staff_group_name)
 
-    for course_id in list(course_ids):
-        # new group format: id of course e.g. "edX.course.run"
-        org, course, name = course_id.split('.')
+        course_id_split = course_id.split('.')
+        if len(course_id_split) == 3:
+            course_ids.add(tuple(course_id_split))
+        else:
+            course_id_split = course_id.split('/')
+            if len(course_id_split) == 3:
+                course_ids.add(tuple(course_id_split))
+            else:
+                # if we cannot parse even one course_id from group name abort.
+                return False, []
+
+    for org, course, name in list(course_ids):
         course_location = Location('i4x', org, course, 'course', name)
         try:
             course = modulestore('direct').get_item(course_location)
