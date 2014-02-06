@@ -118,9 +118,14 @@ def xblock_handler(request, tag=None, package_id=None, branch=None, version_guid
                 # can bind to it correctly
                 component.runtime.wrappers.append(partial(wrap_xblock, 'StudioRuntime'))
 
-                # TODO provide a real context...
+                # Only show the new style HTML for the container view, i.e. for non-verticals
+                # Note: this special case logic can be removed once the unit page is replaced
+                # with the new container view.
+                is_container_view = component.js_module_name != 'VerticalDescriptor'
+                is_read_only_view = is_container_view
                 context = {
-                    'read_only': True
+                    'container_view': is_container_view,
+                    'read_only': is_read_only_view,
                 }
 
                 try:

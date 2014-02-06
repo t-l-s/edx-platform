@@ -126,6 +126,10 @@ def _preview_module_system(request, descriptor):
             # This wrapper replaces urls in the output that start with /static
             # with the correct course-specific url for the static content
             partial(replace_static_urls, None, course_id=course_id),
+
+            # This optionally wraps the result in a Studio div which adds controls
+            # to interact with the xblock
+            _studio_wrap_xblock,
         ),
         error_descriptor_class=ErrorDescriptor,
         # get_user_role accepts a location or a CourseLocator.
@@ -153,14 +157,17 @@ def _studio_wrap_xblock(block, view, frag, context, display_name_only=False):
     """
     Wraps the results of rendering an XBlock view in a div which adds a header and Studio action buttons.
     """
-    from pudb import set_trace; set_trace()
-    template_context = {
-        'xblock_context': context,
-        'block': block,
-        'content': block.display_name if display_name_only else frag.content,
-        }
-    html = render_to_string('studio_xblock_wrapper.html', template_context)
-    return wrap_fragment(frag, html)
+    # Only enable the new HTML rendering for the container view
+    if context['container_view']:
+        template_context = {
+            'xblock_context': context,
+            'block': block,
+            'content': block.display_name if display_name_only else frag.content,
+            }
+        html = render_to_string('studio_xblock_wrapper.html', template_context)
+        return wrap_fragment(frag, html)
+    else:
+        return frag
 
 
 def get_preview_fragment(request, descriptor, context):
@@ -169,9 +176,6 @@ def get_preview_fragment(request, descriptor, context):
     specified by the descriptor and idx.
     """
     module = _load_preview_module(request, descriptor)
-
-    # Add an additional Studio-only wrapper
-    module.runtime.wrappers.append(_studio_wrap_xblock)
 
     try:
         fragment = module.render("student_view", context)
