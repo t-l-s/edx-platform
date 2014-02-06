@@ -128,6 +128,55 @@ function () {
         return speedLinks.eq(index >= speedLinks.length - 1 ? 0 : index + 1);
     }
 
+    // Various event handlers. They all return false to stop propagation and
+    // prevent default behavior.
+    function _clickHandler(event) {
+        var target = $(event.currentTarget);
+
+        this.videoSpeedControl.el.removeClass('open');
+        if (target.is('a.speed_link')) {
+            this.videoSpeedControl.changeVideoSpeed.call(this, event);
+        }        
+
+        return false;
+    }
+
+    function _mouseEnterHandler(event) {
+        this.videoSpeedControl.el.addClass('open');       
+
+        return false;
+    }
+
+    function _mouseLeaveHandler(event) {
+        this.videoSpeedControl.el.removeClass('open');        
+
+        return false;
+    }
+
+    function _keyDownHandler(event) {
+        var keyCode = event.keyCode,
+            KEY = $.ui.keyCode;
+
+        if (keyCode !== KEY.TAB) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+        // Open menu and focus on last element of list above it.
+        if (keyCode === KEY.ENTER || keyCode === KEY.SPACE ||
+            keyCode === KEY.UP) {
+            this.videoSpeedControl.el.addClass('open');
+            this.videoSpeedControl.videoSpeedsEl
+                                  .find('a.speed_link:last')
+                                  .focus();
+        }
+        // Close menu.
+        else if (keyCode === KEY.ESCAPE) {
+            this.videoSpeedControl.el.removeClass('open');
+        }
+
+        return false;
+    }
+
     /**
      * @desc Bind any necessary function callbacks to DOM events (click,
      *     mousemove, etc.).
@@ -144,111 +193,76 @@ function () {
      * @returns {undefined}
      */
     function _bindHandlers(state) {
-        var speedLinks,
+        var speedLinks = state.videoSpeedControl.videoSpeedsEl
+                                                .find('a.speed_link'),
             KEY = $.ui.keyCode;
 
-        state.videoSpeedControl.videoSpeedsEl.find('a')
-            .on('click', state.videoSpeedControl.changeVideoSpeed);
+        // Attcach various events handlers to the speed menu button.
+        state.videoSpeedControl.el
+                .on('mouseenter', _mouseEnterHandler.bind(state))
+                .on('mouseleave', _mouseLeaveHandler.bind(state))
+                .on('click', _clickHandler.bind(state))
+                .on('keydown', _keyDownHandler.bind(state));
 
-        if (state.isTouch) {
-            state.videoSpeedControl.el.on('click', function (event) {
-                // So that you can't highlight this control via a drag
-                // operation, we disable the default browser actions on a
-                // click event.
+        // Attach click and keydown event handlers to the individual speed
+        // entries.
+        speedLinks.on('click', _clickHandler.bind(state));
+
+        speedLinks.each(function(index, speedLink) {
+            var previousSpeedLink = _previousSpeedLink(speedLinks, index),
+                nextSpeedLink = _nextSpeedLink(speedLinks, index),
+                speedButtonAnchor = state.videoSpeedControl.el
+                                                           .children('a');
+
+            $(speedLink).on('keydown', function (event) {
                 event.preventDefault();
-
-                state.videoSpeedControl.el.toggleClass('open');
-            });
-        } else {
-            state.videoSpeedControl.el
-                .on('mouseenter', function () {
-                    state.videoSpeedControl.el.addClass('open');
-                })
-                .on('mouseleave', function () {
-                    state.videoSpeedControl.el.removeClass('open');
-                })
-                .on('click', function (event) {
-                    // So that you can't highlight this control via a drag
-                    // operation, we disable the default browser actions on a
-                    // click event.
-                    event.preventDefault();
-
-                    state.videoSpeedControl.el.removeClass('open');
-                })
-                // Attach 'keydown' event to speed control.
-                .on('keydown', function(event) {
-                    var keyCode = event.keyCode;
-                    if (keyCode !== KEY.TAB) {
-                        event.preventDefault();
-                        event.stopImmediatePropagation();
-                    }
-                    // Open menu and focus on last element of list above it.
-                    if (keyCode === KEY.ENTER || keyCode === KEY.SPACE ||
-                        keyCode === KEY.UP) {
-                        state.videoSpeedControl.el.addClass('open');
-                        state.videoSpeedControl.videoSpeedsEl
-                                               .find('a.speed_link:last')
-                                               .focus();
-                    }
+                event.stopImmediatePropagation();
+                switch (event.keyCode) {
+                    // Scroll up menu, wrapping at the top. Keep menu open.
+                    case KEY.UP:
+                        $(previousSpeedLink).focus();
+                        break;
+                    // Scroll down  menu, wrapping at the bottom. Keep menu
+                    // open.
+                    case KEY.DOWN:
+                        $(nextSpeedLink).focus();
+                        break;
                     // Close menu.
-                    else if (keyCode === KEY.ESCAPE) {
+                    case KEY.TAB:
                         state.videoSpeedControl.el.removeClass('open');
-                    }
-                });
-
-            // Attach 'keydown' event to the individual speed entries.
-            speedLinks = state.videoSpeedControl.videoSpeedsEl
-                .find('a.speed_link');
-
-            speedLinks.each(function(index, speedLink) {
-                var previousSpeedLink = _previousSpeedLink(speedLinks, index),
-                    nextSpeedLink = _nextSpeedLink(speedLinks, index),
-                    speedButtonAnchor = state.videoSpeedControl.el
-                                                               .children('a');
-
-                $(speedLink).on('keydown', function (event) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    switch (event.keyCode) {
-                        // Scroll up menu, wrapping at the top. Keep menu open.
-                        case KEY.UP:
-                            $(previousSpeedLink).focus();
-                            break;
-                        // Scroll down  menu, wrapping at the bottom. Keep menu
-                        // open.
-                        case KEY.DOWN:
-                            $(nextSpeedLink).focus();
-                            break;
-                        // Close menu.
-                        case KEY.TAB:
-                            state.videoSpeedControl.el.removeClass('open');
-                            // Set focus to previous menu button in menu bar
-                            // (Play/Pause button)
-                            if (event.shiftKey) {
-                                state.videoControl.playPauseEl .focus();
-                            }
-                            // Set focus to next menu button in menu bar
-                            // (Volume button)
-                            else {
-                                state.videoVolumeControl.buttonEl.focus();
-                            }
-                            break;
-                        // Close menu, give focus to speed control and change
-                        // speed.
-                        case KEY.ENTER:
-                            state.videoSpeedControl.el.removeClass('open');
-                            speedButtonAnchor.focus();
-                            state.videoSpeedControl.changeVideoSpeed(event);
-                            break;
-                        // Close menu and give focus to speed control.
-                        case KEY.ESCAPE:
-                            state.videoSpeedControl.el.removeClass('open');
-                            speedButtonAnchor.focus();
-                            break;
-                    }
-                });
+                        // Set focus to previous menu button in menu bar
+                        // (Play/Pause button)
+                        if (event.shiftKey) {
+                            state.videoControl.playPauseEl .focus();
+                        }
+                        // Set focus to next menu button in menu bar
+                        // (Volume button)
+                        else {
+                            state.videoVolumeControl.buttonEl.focus();
+                        }
+                        break;
+                    // Close menu, give focus to speed control and change
+                    // speed.
+                    case KEY.ENTER:
+                        state.videoSpeedControl.el.removeClass('open');
+                        speedButtonAnchor.focus();
+                        state.videoSpeedControl.changeVideoSpeed(event);
+                        break;
+                    // Close menu, give focus to speed control and change
+                    // speed.
+                    case KEY.SPACE:
+                        state.videoSpeedControl.el.removeClass('open');
+                        speedButtonAnchor.focus();
+                        state.videoSpeedControl.changeVideoSpeed(event);
+                        break;
+                    // Close menu and give focus to speed control.
+                    case KEY.ESCAPE:
+                        state.videoSpeedControl.el.removeClass('open');
+                        speedButtonAnchor.focus();
+                        break;
+                }
             });
-        }
+        });
     }
 
     // ***************************************************************
@@ -286,9 +300,6 @@ function () {
                 this.videoSpeedControl.currentSpeed
             );
         }
-        // When a speed entry has been selected, we want the speed control to
-        // regain focus.
-        parentEl.parent().siblings('a').focus();
     }
 
     function reRender(params) {
