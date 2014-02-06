@@ -1084,7 +1084,7 @@ class FormulaEquationInput(InputTypeBase):
 
     Example:
 
-    <formulaequationinput size="50"/>
+    <formulaequationinput size="50" label="Enter the equation for motion"/>
 
     options: size -- width of the textbox.
     """
