@@ -67,3 +67,12 @@ Feature: LMS.Video component
     Then video "B" should start playing at speed "0.50"
     When I open video "C"
     Then video "C" should start playing at speed "1.0"
+
+  # 9
+  Scenario: Video component stores position correctly when page is reloaded
+    Given I am registered for the course "test_course"
+    And the course has a Video component in Youtube_HTML5 mode
+    Then when I view the video it has rendered in Youtube mode
+    Then I use state object to play video from 10th second and pause
+    And I reload the page
+    Then I use state object to play video and it starts playing from 10th second

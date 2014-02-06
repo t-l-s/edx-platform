@@ -151,3 +151,17 @@ def _change_video_speed(speed):
     world.browser.execute_script("$('.speeds').addClass('open')")
     speed_css = 'li[data-speed="{0}"] a'.format(speed)
     world.css_click(speed_css)
+
+
+@step('I use state object to play video from 10th second and pause')
+def use_state_object_to_play(_step):
+    world.browser.execute_script("$('.video').data('video-player-state').videoPlayer.onSlideSeek({time: 10})")
+    world.wait_for(lambda _: world.css_html('.vidtime') == '0:11 / 1:55' or world.css_html('.vidtime') == '0:12 / 1:55')
+    world.browser.execute_script("$('.video').data('video-player-state').videoPlayer.pause()")
+
+
+@step('I use state object to play video and it starts playing from 10th second')
+def use_state_object_to_check_position(_step):
+    world.browser.execute_script("$('.video').data('video-player-state').videoPlayer.play()")
+    world.wait_for(lambda _: world.css_html('.vidtime') == '0:10 / 1:55' or world.css_html('.vidtime') == '0:11 / 1:55')
+    world.browser.execute_script("$('.video').data('video-player-state').videoPlayer.pause()")
