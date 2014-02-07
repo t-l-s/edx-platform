@@ -120,12 +120,39 @@ function () {
     // Get previous element in array or cyles back to the last if it is the
     // first.
     function _previousSpeedLink(speedLinks, index) {
-        return speedLinks.eq(index < 1 ? speedLinks.length - 1 : index - 1);
+        return $(speedLinks.eq(index < 1 ? speedLinks.length - 1 : index - 1));
     }
 
     // Get next element in array or cyles back to the first if it is the last.
     function _nextSpeedLink(speedLinks, index) {
-        return speedLinks.eq(index >= speedLinks.length - 1 ? 0 : index + 1);
+        return $(speedLinks.eq(index >= speedLinks.length - 1 ? 0 : index + 1));
+    }
+
+    function _speedLinksFocused(state) {
+        var speedLinks = state.videoSpeedControl.videoSpeedsEl
+                                                .find('a.speed_link'),
+            focused = false;
+        $.each(speedLinks, function(index, speedLink) {
+            if ($(speedLink).is(':focus')) {
+                focused = true
+            }
+        });
+        return focused;
+    }
+
+    function _openMenu(state) {
+        // When speed entries have focus, the menu stays open on
+        // mouseleave. A clickHandler is added to the window
+        // element to have clicks close the menu when they happen
+        // outside of it.
+        $(window).on('click', _clickHandler.bind(state));
+        state.videoSpeedControl.el.addClass('open');
+    }
+
+    function _closeMenu(state) {
+        // Remove the previously added clickHandler from window element.
+        $(window).off('click', _clickHandler.bind(state));
+        state.videoSpeedControl.el.removeClass('open');
     }
 
     // Various event handlers. They all return false to stop propagation and
@@ -141,40 +168,95 @@ function () {
         return false;
     }
 
+    // We do not use _openMenu and _closeMenu in the following two handlers
+    // because we do not want to add an unnecessary clickHandler to the window
+    // element.
     function _mouseEnterHandler(event) {
-        this.videoSpeedControl.el.addClass('open');       
+            this.videoSpeedControl.el.addClass('open');    
 
         return false;
     }
 
     function _mouseLeaveHandler(event) {
-        this.videoSpeedControl.el.removeClass('open');        
-
-        return false;
+        // Only close the menu is no speed entry has focus.
+        if (!_speedLinksFocused(this)) {
+            this.videoSpeedControl.el.removeClass('open');    
+        }
+                
+        return false;
     }
 
     function _keyDownHandler(event) {
-        var keyCode = event.keyCode,
-            KEY = $.ui.keyCode;
+        var KEY = $.ui.keyCode,
+            keyCode = event.keyCode,
+            target = $(event.currentTarget),
+            speedButtonLink = this.videoSpeedControl.el.children('a'),
+            speedLinks = this.videoSpeedControl.videoSpeedsEl
+                                               .find('a.speed_link'),
+            index;
 
-        if (keyCode !== KEY.TAB) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-        }
-        // Open menu and focus on last element of list above it.
-        if (keyCode === KEY.ENTER || keyCode === KEY.SPACE ||
-            keyCode === KEY.UP) {
-            this.videoSpeedControl.el.addClass('open');
-            this.videoSpeedControl.videoSpeedsEl
-                                  .find('a.speed_link:last')
-                                  .focus();
-        }
-        // Close menu.
-        else if (keyCode === KEY.ESCAPE) {
-            this.videoSpeedControl.el.removeClass('open');
-        }
+        if (target.is('a.speed_link')) {
 
-        return false;
+            index = target.parent().index();
+
+            switch (keyCode) {
+                // Scroll up menu, wrapping at the top. Keep menu open.
+                case KEY.UP:
+                    _previousSpeedLink(speedLinks, index).focus();
+                    break;
+                // Scroll down  menu, wrapping at the bottom. Keep menu
+                // open.
+                case KEY.DOWN:
+                    _nextSpeedLink(speedLinks, index).focus();
+                    break;
+                // Close menu.
+                case KEY.TAB:
+                    _closeMenu(this);
+                    // Set focus to previous menu button in menu bar
+                    // (Play/Pause button)
+                    if (event.shiftKey) {
+                        this.videoControl.playPauseEl.focus();
+                    }
+                    // Set focus to next menu button in menu bar
+                    // (Volume button)
+                    else {
+                        this.videoVolumeControl.buttonEl.focus();
+                    }
+                    break;
+                // Close menu, give focus to speed control and change
+                // speed.
+                case KEY.ENTER:
+                case KEY.SPACE:
+                    _closeMenu(this);
+                    speedButtonLink.focus();
+                    this.videoSpeedControl.changeVideoSpeed.call(this, event);
+                    break;
+                // Close menu and give focus to speed control.
+                case KEY.ESCAPE:
+                    _closeMenu(this);
+                    speedButtonLink.focus();
+                    break;
+            }
+            return false;
+        }
+        else {
+            switch(keyCode) {
+                // Open menu and focus on last element of list above it.
+                case KEY.ENTER:
+                case KEY.SPACE:
+                case KEY.UP:
+                    _openMenu(this);
+                    speedLinks.last().focus();
+                    break;
+                // Close menu.
+                case KEY.ESCAPE:
+                    _closeMenu(this);
+                    break;
+            }
+            // We do not stop propagation and default behavior on a TAB
+            // keypress.
+            return event.keyCode === KEY.TAB;
+        }
     }
 
     /**
@@ -193,76 +275,19 @@ function () {
      * @returns {undefined}
      */
     function _bindHandlers(state) {
-        var speedLinks = state.videoSpeedControl.videoSpeedsEl
-                                                .find('a.speed_link'),
-            KEY = $.ui.keyCode;
+        var speedButton = state.videoSpeedControl.el,
+            videoSpeeds = state.videoSpeedControl.videoSpeedsEl;
 
-        // Attcach various events handlers to the speed menu button.
-        state.videoSpeedControl.el
-                .on('mouseenter', _mouseEnterHandler.bind(state))
-                .on('mouseleave', _mouseLeaveHandler.bind(state))
-                .on('click', _clickHandler.bind(state))
-                .on('keydown', _keyDownHandler.bind(state));
+        // Attach various events handlers to the speed menu button.
+        speedButton.on('mouseenter', _mouseEnterHandler.bind(state))
+                   .on('mouseleave', _mouseLeaveHandler.bind(state))
+                   .on('click', _clickHandler.bind(state))
+                   .on('keydown', _keyDownHandler.bind(state));
 
         // Attach click and keydown event handlers to the individual speed
         // entries.
-        speedLinks.on('click', _clickHandler.bind(state));
-
-        speedLinks.each(function(index, speedLink) {
-            var previousSpeedLink = _previousSpeedLink(speedLinks, index),
-                nextSpeedLink = _nextSpeedLink(speedLinks, index),
-                speedButtonAnchor = state.videoSpeedControl.el
-                                                           .children('a');
-
-            $(speedLink).on('keydown', function (event) {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                switch (event.keyCode) {
-                    // Scroll up menu, wrapping at the top. Keep menu open.
-                    case KEY.UP:
-                        $(previousSpeedLink).focus();
-                        break;
-                    // Scroll down  menu, wrapping at the bottom. Keep menu
-                    // open.
-                    case KEY.DOWN:
-                        $(nextSpeedLink).focus();
-                        break;
-                    // Close menu.
-                    case KEY.TAB:
-                        state.videoSpeedControl.el.removeClass('open');
-                        // Set focus to previous menu button in menu bar
-                        // (Play/Pause button)
-                        if (event.shiftKey) {
-                            state.videoControl.playPauseEl .focus();
-                        }
-                        // Set focus to next menu button in menu bar
-                        // (Volume button)
-                        else {
-                            state.videoVolumeControl.buttonEl.focus();
-                        }
-                        break;
-                    // Close menu, give focus to speed control and change
-                    // speed.
-                    case KEY.ENTER:
-                        state.videoSpeedControl.el.removeClass('open');
-                        speedButtonAnchor.focus();
-                        state.videoSpeedControl.changeVideoSpeed(event);
-                        break;
-                    // Close menu, give focus to speed control and change
-                    // speed.
-                    case KEY.SPACE:
-                        state.videoSpeedControl.el.removeClass('open');
-                        speedButtonAnchor.focus();
-                        state.videoSpeedControl.changeVideoSpeed(event);
-                        break;
-                    // Close menu and give focus to speed control.
-                    case KEY.ESCAPE:
-                        state.videoSpeedControl.el.removeClass('open');
-                        speedButtonAnchor.focus();
-                        break;
-                }
-            });
-        });
+        videoSpeeds.on('click', 'a.speed_link', _clickHandler.bind(state))
+                   .on('keydown', 'a.speed_link', _keyDownHandler.bind(state));
     }
 
     // ***************************************************************
